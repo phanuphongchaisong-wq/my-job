@@ -610,19 +610,15 @@
 
         let residentsData = {};
 
-        // 🚨 ฟังก์ชันแสดงหน้าต่างแจ้งเตือนแบบใหม่สุดสวยงามแทนคำสั่ง alert ธรรมดา
         function showCustomAlert(message, type = 'info') {
             const alertOverlay = document.getElementById('custom-alert');
             const alertIcon = document.getElementById('alert-icon');
             const alertMessage = document.getElementById('alert-message');
-            
             alertMessage.textContent = message;
-            
             if (type === 'success') alertIcon.textContent = '🎉';
             else if (type === 'error') alertIcon.textContent = '⚠️';
             else if (type === 'warning') alertIcon.textContent = '🛑';
             else alertIcon.textContent = '💡';
-            
             alertOverlay.classList.remove('hidden');
         }
 
@@ -699,7 +695,6 @@
         tabs.history.btn.addEventListener('click', () => switchTab('history'));
         tabs.manage.btn.addEventListener('click', () => switchTab('manage'));
 
-
         // ================= ระบบดึงข้อมูล คัดแยกตามหมู่บ้านย่อย =================
         async function loadResidents() {
             try {
@@ -726,7 +721,7 @@
                     div.className = 'resident-item';
                     div.innerHTML = `
                         <div class="resident-info">
-                            <strong>[${data.village}] ${data.name}</strong>
+                            <strong>[${data.village.trim()}] ${data.name}</strong>
                             <span>เลขมิเตอร์ล่าสุด: ${data.last_meter.toFixed(1)}</span>
                         </div>
                         <div class="resident-actions">
@@ -736,48 +731,46 @@
                     residentsList.appendChild(div);
                 });
                 
-                // 💡 ผูกอีเวนต์ผ่านฟังก์ชันหลักที่ซ่อมความเสถียรของปุ่มกดแล้ว
-                addListEventListeners();
                 filterResidentsByVillage();
 
             } catch (error) { console.error(error); }
         }
 
-        // 💡 ซ่อมจุดวิกฤต: ฟังก์ชันผูก Event Listener ของปุ่มแก้ไขและลบให้ดึงค่าหมู่บ้านสับเปลี่ยนได้จริง
-        function addListEventListeners() {
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    if (!residentsData[id]) return;
+        // 💡 🛡️ แก้ไขจุดวิกฤตความเสถียร: ใช้ระบบดักจับกล่องส่วนกลาง (Event Delegation) 
+        // สั่งดักฟังกล่องรายชื่อลูกบ้านทั้งหมด ทีนี้ต่อให้แอปจะวาดปุ่มแก้ไขอันใหม่ขึ้นมากี่ล้านรอบ ก็จะกดติดทุกครั้งแน่นอน
+        residentsList.addEventListener('click', async (e) => {
+            // กรณีตรวจเจอว่านิ้วนายไปกดโดนปุ่ม "แก้ไข"
+            if (e.target.classList.contains('btn-edit')) {
+                const id = e.target.getAttribute('data-id');
+                if (!residentsData[id]) return;
 
-                    document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
-                    document.getElementById('edit-resident-id').value = id;
-                    
-                    // ป้องกันคำสะกดคลาดเคลื่อนเรื่องช่องว่าง: ตัดช่องว่างด้านหน้า-ท้ายออก (.trim()) เพื่อให้ Dropdown อ่านค่าตรงกัน
-                    const savedVillage = (residentsData[id].village || "เจ้ วิไล").trim();
-                    document.getElementById('manage-village').value = savedVillage;
-                    
-                    document.getElementById('manage-name').value = residentsData[id].name;
-                    document.getElementById('manage-meter').value = residentsData[id].last_meter;
-                    document.getElementById('btn-cancel-edit').classList.remove('hidden');
-                    
-                    switchTab('manage'); // ดันสลับหน้าฟอร์มขึ้นไปด้านบนเพื่อให้แก้ไข
-                });
-            });
+                document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
+                document.getElementById('edit-resident-id').value = id;
+                
+                // .trim() ล้างช่องว่างตัวหนังสือออก เพื่อป้องกัน Dropdown หาค่าไม่เจอ
+                const cleanVillage = (residentsData[id].village || "เจ้ วิไล").trim();
+                document.getElementById('manage-village').value = cleanVillage;
+                
+                document.getElementById('manage-name').value = residentsData[id].name;
+                document.getElementById('manage-meter').value = residentsData[id].last_meter;
+                document.getElementById('btn-cancel-edit').classList.remove('hidden');
+                
+                // ดันหน้าจอมือถือสไลด์เด้งขึ้นไปบนสุด เพื่อให้นายพิมพ์แก้ไขสะดวก
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
 
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
-                        try { 
-                            await deleteDoc(doc(db, "residents", id)); 
-                            showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); 
-                            loadResidents(); 
-                        } catch (error) { showCustomAlert("ลบไม่สำเร็จ", "error"); }
-                    }
-                });
-            });
-        }
+            // กรณีตรวจเจอว่านิ้วนายไปกดโดนปุ่ม "ลบ"
+            if (e.target.classList.contains('btn-delete')) {
+                const id = e.target.getAttribute('data-id');
+                if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
+                    try { 
+                        await deleteDoc(doc(db, "residents", id)); 
+                        showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); 
+                        loadResidents(); 
+                    } catch (error) { showCustomAlert("ลบไม่สำเร็จ", "error"); }
+                }
+            }
+        });
 
         function filterResidentsByVillage() {
             const selectedVillage = recordVillageFilter.value;
@@ -857,24 +850,24 @@
                         </div>`;
                     historyList.appendChild(div);
                 });
-
-                document.querySelectorAll('.btn-delete-history').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const recordId = e.target.getAttribute('data-id');
-                        if (confirm("คุณต้องการลบรายการประวัติการจดน้ำใบนี้ใช่หรือไม่?\n*หมายเหตุ: ข้อมูลการคำนวณจะถูกลบออกจากรายงานย้อนหลัง*")) {
-                            try {
-                                await deleteDoc(doc(db, "water_records", recordId));
-                                showCustomAlert("ลบประวัติการจดค่าน้ำเรียบร้อย", "success");
-                                loadHistory();
-                            } catch (error) {
-                                showCustomAlert("ไม่สามารถลบประวัติได้", "error");
-                            }
-                        }
-                    });
-                });
-
             } catch (error) { console.error(error); }
         }
+
+        // 💡 🛡️ แก้ไขเพิ่ม: ใช้ลอจิกฝากกล่องส่วนกลางดักจับปุ่มลบประวัติเช่นเดียวกัน เพื่อไม่ให้ปุ่มล็อกค้าง
+        historyList.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-delete-history')) {
+                const recordId = e.target.getAttribute('data-id');
+                if (confirm("คุณต้องการลบรายการประวัติการจดน้ำใบนี้ใช่หรือไม่?\n*หมายเหตุ: ข้อมูลการคำนวณจะถูกลบออกจากรายงานย้อนหลัง*")) {
+                    try {
+                        await deleteDoc(doc(db, "water_records", recordId));
+                        showCustomAlert("ลบประวัติการจดค่าน้ำเรียบร้อย", "success");
+                        loadHistory();
+                    } catch (error) {
+                        showCustomAlert("ไม่สามารถลบประวัติได้", "error");
+                    }
+                }
+            }
+        });
 
         // ================= เพิ่ม/แก้ไข ลูกบ้าน =================
         document.getElementById('btn-save-resident').addEventListener('click', async () => {
