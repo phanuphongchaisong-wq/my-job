@@ -297,7 +297,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            padding-right: 30px; 
+            padding-right: 35px; 
         }
 
         .history-header span:first-child { font-weight: 600; color: #1e293b; font-size: 1.02rem; }
@@ -327,6 +327,7 @@
             cursor: pointer;
             transition: color 0.2s;
             padding: 4px;
+            z-index: 10;
         }
         .btn-delete-history:hover { color: var(--error); }
 
@@ -669,7 +670,7 @@
             if(confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) { signOut(auth); }
         });
 
-        // ================= 💡 แก้บั๊กวิกฤต: ย้ายชุดคำสั่งเปิด-ปิดสลับแท็บเมนูด้านล่างเข้ามาควบคุมแบบปิดในก้อน Module เพื่อป้องกันอาการค้าง =================
+        // ================= เมนูสลับแท็บ Bottom Nav (ซ่อมลอจิกค้างเรียบร้อย) =================
         const tabs = {
             record: { btn: document.getElementById('tab-record'), content: document.getElementById('tab-record-content'), title: "💦 H2O Recorder", sub: "ระบบช่วยคำนวณและบันทึกค่าน้ำ" },
             history: { btn: document.getElementById('tab-history'), content: document.getElementById('tab-history-content'), title: "📜 ประวัติการบันทึก", sub: "แสดงรายการประวัติยอดเงินและหน่วยใช้น้ำ" },
@@ -733,36 +734,47 @@
                     residentsList.appendChild(div);
                 });
                 
-                // 💡 ซ่อมฟังก์ชันปุ่มแก้ไขข้อมูลให้อ่านค่าได้นิ่งและสลับหน้าได้จริง
-                document.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
-                        document.getElementById('edit-resident-id').value = id;
-                        document.getElementById('manage-village').value = residentsData[id].village || "เจ้ วิไล";
-                        document.getElementById('manage-name').value = residentsData[id].name;
-                        document.getElementById('manage-meter').value = residentsData[id].last_meter;
-                        document.getElementById('btn-cancel-edit').classList.remove('hidden');
-                        switchTab('manage'); // สลับหน้าฟอร์มมาให้แก้ไขทันที
-                    });
-                });
-
-                document.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
-                            try { 
-                                await deleteDoc(doc(db, "residents", id)); 
-                                showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); 
-                                loadResidents(); 
-                            } catch (error) { showCustomAlert("ลบไม่สำเร็จ", "error"); }
-                        }
-                    });
-                });
-
+                // 💡 ซ่อมฟังก์ชันปุ่มแก้ไข/ลบโดยดักจับแบบระบุตำแหน่งเป้าหมาย (Event Delegation) เพื่อแก้บั๊กปุ่มกดแล้วนิ่ง
+                addListEventListeners();
                 filterResidentsByVillage();
 
             } catch (error) { console.error(error); }
+        }
+
+        function addListEventListeners() {
+            // ดักจับปุ่มแก้ไข
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true)); // ล้างค่าสิทธิ์ซ้ำซ้อนเก่าป้องกันการค้าง
+            });
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
+                    document.getElementById('edit-resident-id').value = id;
+                    document.getElementById('manage-village').value = residentsData[id].village || "เจ้ วิไล";
+                    document.getElementById('manage-name').value = residentsData[id].name;
+                    document.getElementById('manage-meter').value = residentsData[id].last_meter;
+                    document.getElementById('btn-cancel-edit').classList.remove('hidden');
+                    switchTab('manage');
+                });
+            });
+
+            // ดักจับปุ่มลบ
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
+                        try { 
+                            await deleteDoc(doc(db, "residents", id)); 
+                            showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); 
+                            loadResidents(); 
+                        } catch (error) { showCustomAlert("ลบไม่สำเร็จ", "error"); }
+                    }
+                });
+            });
         }
 
         function filterResidentsByVillage() {
@@ -844,7 +856,7 @@
                     historyList.appendChild(div);
                 });
 
-                // ผูกสิทธิ์คำสั่งลบประวัติให้ทำงานได้จริง
+                // ผูกสิทธิ์คำสั่งลบประวัติแบบแก้อาการปุ่มล็อกค้าง
                 document.querySelectorAll('.btn-delete-history').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const recordId = e.target.getAttribute('data-id');
@@ -908,7 +920,7 @@
             const previousValue = residentsData[residentId].last_meter;
             
             if (currentValue === previousValue) {
-                showCustomAlert("⚠️ คุณบันทึกเลขหลังนี้ไปแล้ว หรือเลขมิเตอร์ครั้งนี้เท่ากับครั้งก่อน ไม่จำเป็นต้องบันทึกซ้ำครับ", "warning");
+                showCustomAlert("คุณบันทึกเลขหลังนี้ไปแล้ว หรือเลขมิเตอร์ครั้งนี้เท่ากับครั้งก่อน ไม่จำเป็นต้องบันทึกซ้ำครับ", "warning");
                 return;
             }
             if (currentValue < previousValue) { 
