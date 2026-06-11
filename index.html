@@ -433,8 +433,10 @@
                     <label for="login-password">🔑 รหัสผ่าน</label>
                     <input type="password" id="login-password" placeholder="รหัสผ่าน 6 ตัวขึ้นไป" autocomplete="current-password">
                 </div>
-                <button type="button" class="btn btn-primary" id="btn-login">🔓 เข้าสู่ระบบ</button>
-                <button type="button" class="btn-link" id="go-to-register">✨ ยังไม่มีบัญชี? สมัครสมาชิกใหม่</button>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button type="button" class="btn btn-primary" id="btn-login">🔓 เข้าสู่ระบบ</button>
+                    <button type="button" class="btn-link" id="go-to-register">✨ ยังไม่มีบัญชี? สมัครสมาชิกใหม่</button>
+                </div>
             </div>
         </div>
     </div>
@@ -670,7 +672,7 @@
             if(confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) { signOut(auth); }
         });
 
-        // ================= เมนูสลับแท็บ Bottom Nav (ซ่อมลอจิกค้างเรียบร้อย) =================
+        // ================= เมนูสลับแท็บ Bottom Nav =================
         const tabs = {
             record: { btn: document.getElementById('tab-record'), content: document.getElementById('tab-record-content'), title: "💦 H2O Recorder", sub: "ระบบช่วยคำนวณและบันทึกค่าน้ำ" },
             history: { btn: document.getElementById('tab-history'), content: document.getElementById('tab-history-content'), title: "📜 ประวัติการบันทึก", sub: "แสดงรายการประวัติยอดเงินและหน่วยใช้น้ำ" },
@@ -734,35 +736,35 @@
                     residentsList.appendChild(div);
                 });
                 
-                // 💡 ซ่อมฟังก์ชันปุ่มแก้ไข/ลบโดยดักจับแบบระบุตำแหน่งเป้าหมาย (Event Delegation) เพื่อแก้บั๊กปุ่มกดแล้วนิ่ง
+                // 💡 ผูกอีเวนต์ผ่านฟังก์ชันหลักที่ซ่อมความเสถียรของปุ่มกดแล้ว
                 addListEventListeners();
                 filterResidentsByVillage();
 
             } catch (error) { console.error(error); }
         }
 
+        // 💡 ซ่อมจุดวิกฤต: ฟังก์ชันผูก Event Listener ของปุ่มแก้ไขและลบให้ดึงค่าหมู่บ้านสับเปลี่ยนได้จริง
         function addListEventListeners() {
-            // ดักจับปุ่มแก้ไข
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.replaceWith(btn.cloneNode(true)); // ล้างค่าสิทธิ์ซ้ำซ้อนเก่าป้องกันการค้าง
-            });
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.target.getAttribute('data-id');
+                    if (!residentsData[id]) return;
+
                     document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
                     document.getElementById('edit-resident-id').value = id;
-                    document.getElementById('manage-village').value = residentsData[id].village || "เจ้ วิไล";
+                    
+                    // ป้องกันคำสะกดคลาดเคลื่อนเรื่องช่องว่าง: ตัดช่องว่างด้านหน้า-ท้ายออก (.trim()) เพื่อให้ Dropdown อ่านค่าตรงกัน
+                    const savedVillage = (residentsData[id].village || "เจ้ วิไล").trim();
+                    document.getElementById('manage-village').value = savedVillage;
+                    
                     document.getElementById('manage-name').value = residentsData[id].name;
                     document.getElementById('manage-meter').value = residentsData[id].last_meter;
                     document.getElementById('btn-cancel-edit').classList.remove('hidden');
-                    switchTab('manage');
+                    
+                    switchTab('manage'); // ดันสลับหน้าฟอร์มขึ้นไปด้านบนเพื่อให้แก้ไข
                 });
             });
 
-            // ดักจับปุ่มลบ
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.replaceWith(btn.cloneNode(true));
-            });
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -796,7 +798,7 @@
 
             let hasResident = false;
             Object.keys(residentsData).forEach(id => {
-                if (residentsData[id].village === selectedVillage) {
+                if (residentsData[id].village.trim() === selectedVillage.trim()) {
                     const option = document.createElement('option');
                     option.value = id;
                     option.textContent = residentsData[id].name;
@@ -856,7 +858,6 @@
                     historyList.appendChild(div);
                 });
 
-                // ผูกสิทธิ์คำสั่งลบประวัติแบบแก้อาการปุ่มล็อกค้าง
                 document.querySelectorAll('.btn-delete-history').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const recordId = e.target.getAttribute('data-id');
