@@ -59,7 +59,6 @@
             padding-bottom: 80px;
         }
 
-        /* หัวแอปดีไซน์โมเดิร์นหรูหราสี Midnight */
         .app-header {
             background: var(--primary-gradient);
             color: white;
@@ -107,7 +106,6 @@
             flex: 1;
         }
 
-        /* รูปแบบการ์ดจัดวางสมดุล */
         .card {
             background: var(--bg-card);
             border-radius: 16px;
@@ -157,7 +155,6 @@
 
         select:disabled { background-color: #f1f5f9; color: #94a3b8; }
 
-        /* กล่องเลขมิเตอร์รอบก่อนพรีเมียมโทนฟ้าคราม */
         .info-box {
             background-color: #f0f6ff;
             border-left: 4px solid var(--accent);
@@ -175,7 +172,6 @@
 
         .divider { border: 0; height: 1px; background: #e2e8f0; margin: 22px 0; }
 
-        /* ปุ่มกดขนาดมาตรฐานพรีเมียม อนิเมชันเด้งรับนิ้วโป้ง */
         .btn {
             width: 100%;
             padding: 16px;
@@ -216,7 +212,6 @@
             display: inline-block;
         }
 
-        /* กล่องแสดงบิลค่าน้ำสีเขียวมรกต */
         .result-card {
             background-color: var(--success-bg);
             border: 1px solid var(--success-border);
@@ -260,7 +255,6 @@
             opacity: 0.8;
         }
 
-        /* รายชื่อลูกบ้าน */
         .resident-item {
             display: flex;
             justify-content: space-between;
@@ -288,7 +282,6 @@
         .btn-edit { background-color: #fef3c7; color: #92400e; }
         .btn-delete { background-color: #fee2e2; color: #991b1b; }
 
-        /* การ์ดบันทึกประวัติ */
         .history-item {
             background: #fff;
             border: 1px solid var(--border);
@@ -304,7 +297,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            padding-right: 25px; /* เว้นที่ให้ปุ่มลบประวัติ */
+            padding-right: 30px; 
         }
 
         .history-header span:first-child { font-weight: 600; color: #1e293b; font-size: 1.02rem; }
@@ -323,7 +316,6 @@
 
         .history-price { color: var(--success); font-weight: 700; font-size: 1.1rem; }
 
-        /* ปุ่มลบประวัติอันจิ๋วสไตล์หรูหรา */
         .btn-delete-history {
             position: absolute;
             top: 14px;
@@ -338,7 +330,6 @@
         }
         .btn-delete-history:hover { color: var(--error); }
 
-        /* แถบ Bottom Nav สไตล์ลอยแก้ว */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -371,7 +362,6 @@
         .nav-item.active { color: var(--accent); }
         .nav-icon { font-size: 1.25rem; transition: transform 0.2s; }
 
-        /* การ์ดกล่องล็อกอินให้อยู่กึ่งกลางพรีเมียมพอดีจอ */
         .login-container {
             padding: 20px;
             display: flex;
@@ -384,7 +374,6 @@
         .login-logo h1 { color: #0f172a; font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; }
         .login-logo p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* 🚨 หน้าต่างแจ้งเตือน CUSTOM ALERT POPUP ดีไซน์ใหม่สุดพรีเมียม */
         .custom-alert-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -658,11 +647,7 @@
             const password = document.getElementById('login-password').value;
             if (!email || !password) { showCustomAlert("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน", "warning"); return; }
             if (!email.includes('@')) { email = email + "@gmail.com"; }
-            try { 
-                await signInWithEmailAndPassword(auth, email, password); 
-            } catch (error) { 
-                showCustomAlert("เข้าสู่ระบบไม่สำเร็จ: ชื่อผู้ใช้หรือรหัสผ่านผิดพลาด", "error"); 
-            }
+            try { await signInWithEmailAndPassword(auth, email, password); } catch (error) { showCustomAlert("เข้าสู่ระบบไม่สำเร็จ: ชื่อผู้ใช้หรือรหัสผ่านผิดพลาด", "error"); }
         });
 
         document.getElementById('btn-register').addEventListener('click', async () => {
@@ -683,6 +668,34 @@
         document.getElementById('btn-logout').addEventListener('click', () => {
             if(confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) { signOut(auth); }
         });
+
+        // ================= 💡 แก้บั๊กวิกฤต: ย้ายชุดคำสั่งเปิด-ปิดสลับแท็บเมนูด้านล่างเข้ามาควบคุมแบบปิดในก้อน Module เพื่อป้องกันอาการค้าง =================
+        const tabs = {
+            record: { btn: document.getElementById('tab-record'), content: document.getElementById('tab-record-content'), title: "💦 H2O Recorder", sub: "ระบบช่วยคำนวณและบันทึกค่าน้ำ" },
+            history: { btn: document.getElementById('tab-history'), content: document.getElementById('tab-history-content'), title: "📜 ประวัติการบันทึก", sub: "แสดงรายการประวัติยอดเงินและหน่วยใช้น้ำ" },
+            manage: { btn: document.getElementById('tab-manage'), content: document.getElementById('tab-manage-content'), title: "⚙️ ตั้งค่าลูกบ้าน", sub: "เพิ่ม ลบ แก้ไขข้อมูลสมาชิกในระบบ" }
+        };
+
+        function switchTab(targetKey) {
+            Object.keys(tabs).forEach(key => {
+                if(key === targetKey) {
+                    tabs[key].btn.classList.add('active');
+                    tabs[key].content.classList.remove('hidden');
+                    document.getElementById('header-title').textContent = tabs[key].title;
+                    document.getElementById('header-subtitle').textContent = tabs[key].sub;
+                } else {
+                    tabs[key].btn.classList.remove('active');
+                    tabs[key].content.classList.add('hidden');
+                }
+            });
+            if(targetKey === 'history') loadHistory();
+            if(targetKey === 'manage') resetManageForm();
+        }
+
+        tabs.record.btn.addEventListener('click', () => switchTab('record'));
+        tabs.history.btn.addEventListener('click', () => switchTab('history'));
+        tabs.manage.btn.addEventListener('click', () => switchTab('manage'));
+
 
         // ================= ระบบดึงข้อมูล คัดแยกตามหมู่บ้านย่อย =================
         async function loadResidents() {
@@ -720,7 +733,7 @@
                     residentsList.appendChild(div);
                 });
                 
-                // 💡 ผูกอีเวนต์เปิดฟังก์ชันปุ่มแก้ไข/ลบในตารางแบบผูกมิตรกับ Module
+                // 💡 ซ่อมฟังก์ชันปุ่มแก้ไขข้อมูลให้อ่านค่าได้นิ่งและสลับหน้าได้จริง
                 document.querySelectorAll('.btn-edit').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const id = e.target.getAttribute('data-id');
@@ -730,7 +743,7 @@
                         document.getElementById('manage-name').value = residentsData[id].name;
                         document.getElementById('manage-meter').value = residentsData[id].last_meter;
                         document.getElementById('btn-cancel-edit').classList.remove('hidden');
-                        switchTab('manage');
+                        switchTab('manage'); // สลับหน้าฟอร์มมาให้แก้ไขทันที
                     });
                 });
 
@@ -895,7 +908,7 @@
             const previousValue = residentsData[residentId].last_meter;
             
             if (currentValue === previousValue) {
-                showCustomAlert("คุณบันทึกเลขหลังนี้ไปแล้ว หรือเลขมิเตอร์ครั้งนี้เท่ากับครั้งก่อน ไม่จำเป็นต้องบันทึกซ้ำครับ", "warning");
+                showCustomAlert("⚠️ คุณบันทึกเลขหลังนี้ไปแล้ว หรือเลขมิเตอร์ครั้งนี้เท่ากับครั้งก่อน ไม่จำเป็นต้องบันทึกซ้ำครับ", "warning");
                 return;
             }
             if (currentValue < previousValue) { 
