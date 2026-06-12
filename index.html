@@ -26,6 +26,8 @@
             --error-bg: #fef2f2;
             --error-border: #fecaca;
             --warning: #d97706;
+            --warning-bg: #fffbeb;
+            --warning-border: #fef3c7;
             --bg-page: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #0f172a;
@@ -34,7 +36,6 @@
             --transition-speed: 0.25s;
         }
 
-        /* 🌙 ชุดตกแต่งระบบ Dark Mode นวลตาระดับพรีเมียม */
         body.dark-mode {
             --bg-page: #020617;
             --bg-card: #0f172a;
@@ -71,7 +72,6 @@
             flex-direction: column;
             position: relative;
             padding-bottom: 80px;
-            transition: background-color var(--transition-speed);
         }
 
         .app-header {
@@ -109,7 +109,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* ปุ่มสลับโหมดกลางคืนพรีเมียม */
         .btn-toggle-dark {
             position: absolute;
             top: 24px;
@@ -124,7 +123,6 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 🔔 แถบแบนเนอร์แจ้งเตือนรอบเก็บเงินวิกฤตสิ้นเดือนเสาร์อาทิตย์ */
         .weekend-warning-banner {
             background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
             color: white;
@@ -249,23 +247,26 @@
 
         .resident-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
             padding: 14px 18px;
             border: 1px solid var(--border);
             border-radius: 14px;
             margin-bottom: 12px;
             background-color: var(--bg-page);
         }
+        .resident-row-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .resident-info strong { font-weight: 600; font-size: 1rem; color: var(--text-main); }
         .resident-info span { display: block; font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; }
-        .resident-actions { display: flex; gap: 8px; }
+        .resident-note { font-size: 0.82rem; color: var(--warning); background-color: rgba(217, 119, 6, 0.06); padding: 4px 10px; border-radius: 6px; font-weight: 500; width: 100%; }
+        .resident-actions { display: flex; gap: 8px; justify-content: flex-end; width: 100%; margin-top: 4px; }
 
         .btn-sm { padding: 8px 14px; font-size: 0.82rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
         .btn-edit { background-color: #fef3c7; color: #92400e; }
         .btn-delete { background-color: #fee2e2; color: #991b1b; }
+        .btn-map { background-color: #e0f2fe; color: #0369a1; }
 
-        /* 📊 Dashboard สรุปยอดนวัตกรรมหรูหราประจำเดือน */
+        /* 📊 Dashboard สรุปยอดนวัตกรรมหรูหราประจำเดือน เพิ่มสถานะจ่ายเงิน */
         .summary-dashboard {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
@@ -280,8 +281,13 @@
         .summary-box h4 { font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px; }
         .summary-box .sum-money { font-size: 1.25rem; font-weight: 700; color: #10b981; }
         .summary-box .sum-unit { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+        
+        .financial-summary { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
+        .fin-row { display: flex; justify-content: space-between; color: #cbd5e1; }
+        .fin-row .green { color: #34d399; font-weight: bold; }
+        .fin-row .red { color: #f87171; font-weight: bold; }
 
-        /* การ์ดตารางประวัติสิ่งบันทึก */
+        /* การ์ดตารางประวัติสิ่งบันทึก + ปุ่มสลับสถานะเงิน */
         .history-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -293,15 +299,25 @@
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-right: 35px; }
         .history-header span:first-child { font-weight: 600; color: var(--text-main); font-size: 1.02rem; }
         .history-date { font-size: 0.8rem; color: var(--text-muted); }
-        .history-details { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; background: var(--bg-page); padding: 12px 14px; border-radius: 10px; }
+        .history-details { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; background: var(--bg-page); padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; }
         .history-price { color: var(--success); font-weight: 700; font-size: 1.1rem; }
         .btn-delete-history { position: absolute; top: 14px; right: 14px; background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 4px; z-index: 10; }
-        .btn-delete-history:hover { color: var(--error); }
-        .gps-badge { display: inline-block; font-size: 0.75rem; color: #ef4444; background: rgba(239, 68, 68, 0.08); padding: 2px 6px; border-radius: 4px; margin-top: 4px; font-weight: 500; }
+        .gps-badge { display: inline-block; font-size: 0.75rem; color: #ef4444; background: rgba(239, 68, 68, 0.08); padding: 2px 6px; border-radius: 4px; font-weight: 500; }
 
-        /* แถบรายงานปุ่มส่งออกข้อมูล */
+        /* แถบปุ่มเลือกสถานะบิลโมเดิร์น */
+        .status-toggle-container { display: flex; gap: 6px; width: 100%; }
+        .btn-status-toggle { flex: 1; padding: 8px; font-size: 0.8rem; border-radius: 8px; font-weight: 600; text-align: center; border: 1px solid var(--border); background-color: var(--bg-card); color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+        .btn-status-toggle.paid.active { background-color: #d1fae5; color: #065f46; border-color: #34d399; }
+        .btn-status-toggle.pending.active { background-color: #fef3c7; color: #92400e; border-color: #fbbf24; }
+        .btn-status-toggle.unpaid.active { background-color: #fee2e2; color: #991b1b; border-color: #f87171; }
+
         .export-group { display: flex; gap: 10px; margin-bottom: 18px; }
         .btn-export { flex: 1; padding: 10px; font-size: 0.88rem; border-radius: 8px; border: 1px solid var(--border); background-color: var(--bg-card); color: var(--text-main); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        /* 🔍 ช่องค้นหาด่วน */
+        .search-wrapper { position: relative; margin-bottom: 15px; }
+        .search-input { padding-left: 40px; font-size: 0.95rem; }
+        .search-icon { position: absolute; left: 14px; top: 15px; color: var(--text-muted); font-size: 1.1rem; }
 
         .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 68px; background-color: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.8rem; font-weight: 600; cursor: pointer; height: 100%; gap: 4px; }
@@ -458,11 +474,22 @@
                             <div class="sum-unit" id="sum-unit-v2">ใช้ไป: 0 หน่วย</div>
                         </div>
                     </div>
+                    
+                    <div class="financial-summary">
+                        <div class="fin-row"><span>💰 ยอดเรียกเก็บทั้งหมดค่างวดนี้:</span><span id="fin-total-bill">0 บาท</span></div>
+                        <div class="fin-row"><span>🟢 จัดเก็บเงินสำเร็จแล้ว:</span><span class="green" id="fin-total-paid">0 บาท</span></div>
+                        <div class="fin-row"><span>🔴 ยอดค้างชำระคงเหลือ:</span><span class="red" id="fin-total-unpaid">0 บาท</span></div>
+                    </div>
                 </div>
 
                 <div class="export-group">
                     <button class="btn-export" id="btn-export-excel">🟢 ส่งออกไฟล์ Excel</button>
                     <button class="btn-export" id="btn-export-pdf">🔴 ส่งออกรายงาน PDF</button>
+                </div>
+
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="history-search" class="search-input" placeholder="พิมพ์ชื่อ บ้านเลขที่ หรือ 'ค้างชำระ'">
                 </div>
 
                 <h3 style="margin-bottom: 14px; font-size: 1.1rem; color: var(--text-main); font-weight: 600;">📜 รายการประวัติจดน้ำล่าสุด</h3>
@@ -491,11 +518,20 @@
                         <label for="manage-meter">🔢 เลขมิเตอร์เริ่มต้น (ครั้งล่าสุด)</label>
                         <input type="number" id="manage-meter" placeholder="เช่น 150.0" inputmode="decimal">
                     </div>
+                    <div class="form-group">
+                        <label for="manage-note">📝 หมายเหตุที่ตั้งบ้าน / ข้อมูลมิเตอร์</label>
+                        <input type="text" id="manage-note" placeholder="เช่น มิเตอร์อยู่ข้างบ้าน, เข้าซอยซ้าย">
+                    </div>
                     
                     <div style="display:flex; gap:10px;">
                         <button type="button" class="btn btn-primary" id="btn-save-resident">💾 บันทึกข้อมูล</button>
                         <button type="button" class="btn btn-secondary hidden" id="btn-cancel-edit" style="margin-bottom:0;">ยกเลิก</button>
                     </div>
+                </div>
+
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="resident-search" class="search-input" placeholder="พิมพ์ค้นหาชื่อ หรือบ้านเลขที่ลูกบ้าน...">
                 </div>
 
                 <h3 style="margin-bottom: 12px; font-size: 1.1rem; color: var(--text-main); font-weight: 600;">📋 รายชื่อลูกบ้านทั้งหมด</h3>
@@ -556,6 +592,7 @@
 
         let residentsData = {};
         let rawHistoryRecords = [];
+        let averageUnitsCache = 0; // เก็บค่ายอดเฉลี่ยรวมเฉลี่ยกลางไว้ตรวจสอบมิเตอร์รั่วซึม
 
         function showCustomAlert(message, type = 'info') {
             const alertOverlay = document.getElementById('custom-alert');
@@ -690,19 +727,7 @@
                     const id = item.id;
                     const data = item.data;
                     residentsData[id] = data;
-
-                    const div = document.createElement('div');
-                    div.className = 'resident-item';
-                    div.innerHTML = `
-                        <div class="resident-info">
-                            <strong>[${data.village.trim()}] ${data.name}</strong>
-                            <span>เลขมิเตอร์ล่าสุด: ${data.last_meter.toFixed(1)}</span>
-                        </div>
-                        <div class="resident-actions">
-                            <button class="btn-sm btn-edit" data-id="${id}">แก้ไข</button>
-                            <button class="btn-sm btn-delete" data-id="${id}">ลบ</button>
-                        </div>`;
-                    residentsList.appendChild(div);
+                    renderResidentItem(id, data);
                 });
                 
                 filterResidentsByVillage();
@@ -710,38 +735,77 @@
             } catch (error) { console.error(error); }
         }
 
-        // 💡 🛡️ ซ่อมลอจิกแก้อาการแก้ไขไม่ได้ถาวร 100% ด้วยระบบ Event Delegation ดักจับวัตถุสลักชื่อคีย์บอร์ดชั้นนอกสุด
+        // ฟังก์ชันช่วยวาดแผงรายชื่อลูกบ้านพร้อมช่องหมายเหตุและพิกัดแผนที่นำทาง
+        function renderResidentItem(id, data) {
+            const noteText = data.note ? `<div class="resident-note">📝 หมายเหตุที่ตั้ง: ${data.note}</div>` : '';
+            // ปุ่มเปิดแผนที่นำทางสำหรับ iPhone
+            const mapButton = (data.latitude) ? `<button class="btn-sm btn-map" data-lat="${data.latitude}" data-lng="${data.longitude}">🗺️ นำทาง</button>` : '';
+
+            const div = document.createElement('div');
+            div.className = 'resident-item';
+            div.setAttribute('data-search-text', `${data.village} ${data.name}`.toLowerCase());
+            div.innerHTML = `
+                <div class="resident-row-top">
+                    <div class="resident-info">
+                        <strong>[${data.village.trim()}] ${data.name}</strong>
+                        <span>เลขมิเตอร์ล่าสุด: ${data.last_meter.toFixed(1)}</span>
+                    </div>
+                </div>
+                ${noteText}
+                <div class="resident-actions">
+                    ${mapButton}
+                    <button class="btn-sm btn-edit" data-id="${id}">แก้ไข</button>
+                    <button class="btn-sm btn-delete" data-id="${id}">ลบ</button>
+                </div>`;
+            residentsList.appendChild(div);
+        }
+
+        // 🔍 สั่งเปิดตัวดักฟังกล่องค้นหาลูกบ้านแบบเรียลไทม์ขณะพิมพ์
+        document.getElementById('resident-search').addEventListener('input', (e) => {
+            const searchText = e.target.value.toLowerCase().trim();
+            const items = residentsList.getElementsByClassName('resident-item');
+            
+            Array.from(items).forEach(item => {
+                const itemText = item.getAttribute('data-search-text');
+                if (itemText.includes(searchText)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // 🛡️ ซ่อมลоจิกดักจับกล่องส่วนกลางลูกบ้าน (สิทธิ์นำทางแผนที่ / แก้ไข / ลบ)
         residentsList.addEventListener('click', async (e) => {
             const editBtn = e.target.closest('.btn-edit');
             const deleteBtn = e.target.closest('.btn-delete');
+            const mapBtn = e.target.closest('.btn-map');
 
             if (editBtn) {
                 const id = editBtn.getAttribute('data-id');
-                if (!residentsData[id]) return;
-
                 document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
                 document.getElementById('edit-resident-id').value = id;
-                
-                const cleanVillage = (residentsData[id].village || "เจ้ วิไล").trim();
-                document.getElementById('manage-village').value = cleanVillage;
-                
+                document.getElementById('manage-village').value = (residentsData[id].village || "เจ้ วิไล").trim();
                 document.getElementById('manage-name').value = residentsData[id].name;
                 document.getElementById('manage-meter').value = residentsData[id].last_meter;
+                document.getElementById('manage-note').value = residentsData[id].note || "";
                 document.getElementById('btn-cancel-edit').classList.remove('hidden');
-                
-                // ดันหน้าจอมือถือ iPhone เลื่อนขึ้นไปด้านบนฟอร์มกรอกข้อมูลแบบนุ่มนวล
+                switchTab('manage');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             if (deleteBtn) {
                 const id = deleteBtn.getAttribute('data-id');
                 if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
-                    try { 
-                        await deleteDoc(doc(db, "residents", id)); 
-                        showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); 
-                        loadResidents(); 
-                    } catch (error) { showCustomAlert("ลบไม่สำเร็จ", "error"); }
+                    try { await deleteDoc(doc(db, "residents", id)); showCustomAlert("ลบรายชื่อลูกบ้านสำเร็จ", "success"); loadResidents(); } catch (error) { }
                 }
+            }
+
+            if (mapBtn) {
+                const lat = mapBtn.getAttribute('data-lat');
+                const lng = mapBtn.getAttribute('data-lng');
+                // 🗺️ เปิดทางทะลุแอปแผนที่หลักในสมาร์ทโฟน iPhone (Apple Maps / Google Maps อัตโนมัติ)
+                window.open(`maps://maps.apple.com/?q=${lat},${lng}`, '_blank');
             }
         });
 
@@ -773,9 +837,7 @@
                 }
             });
 
-            if (!hasResident) {
-                defaultOption.textContent = `❌ ไม่มีรายชื่อในหมู่บ้าน ${selectedVillage}`;
-            }
+            if (!hasResident) { defaultOption.textContent = `❌ ไม่มีรายชื่อในหมู่บ้าน ${selectedVillage}`; }
         }
 
         recordVillageFilter.addEventListener('change', filterResidentsByVillage);
@@ -786,26 +848,30 @@
             document.getElementById('manage-village').selectedIndex = 0;
             document.getElementById('manage-name').value = '';
             document.getElementById('manage-meter').value = '';
+            document.getElementById('manage-note').value = '';
             document.getElementById('btn-cancel-edit').classList.add('hidden');
         }
         document.getElementById('btn-cancel-edit').addEventListener('click', resetManageForm);
 
-        // ================= ประวัติการจดน้ำ & ระบบลบประวัติย่อย =================
+        // ================= ประวัติการจดน้ำ & ยอดรวมชำระเงินค้างจ่ายประจำเดือน =================
         async function loadHistory() {
             try {
-                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(50));
+                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(100));
                 const querySnapshot = await getDocs(historyQuery);
                 historyList.innerHTML = '';
                 rawHistoryRecords = [];
                 
                 let moneyV1 = 0, unitV1 = 0;
                 let moneyV2 = 0, unitV2 = 0;
+                let finTotal = 0, finPaid = 0, finUnpaid = 0;
+                let totalUnitsLogged = 0, recordsCount = 0;
+
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
 
                 if(querySnapshot.empty) {
                     historyList.innerHTML = '<div style="text-align:center; color:#a0aec0; padding:20px;">ยังไม่มีประวัติการจดค่าน้ำ</div>';
-                    updateDashboardDisplays(0, 0, 0, 0);
+                    updateDashboardDisplays(0, 0, 0, 0, 0, 0, 0);
                     return;
                 }
 
@@ -813,93 +879,142 @@
                     const id = docSnap.id;
                     const data = docSnap.data();
                     data.id = id;
-                    rawHistoryRecords.push(data);
-                    let dateString = "ระบุผ่านออฟไลน์";
                     
+                    // ปรับแต่งฟิลด์ตรวจสอบสถานะเริ่มต้น (ดีฟอลต์ให้รอชำระชั่วคราว)
+                    if(!data.status) { data.status = "รอชำระ"; }
+                    rawHistoryRecords.push(data);
+                    
+                    let dateString = "ระบุผ่านออฟไลน์";
                     if (data.record_date) {
                         const d = data.record_date.toDate();
                         dateString = d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute:'2-digit' }) + " น.";
                         
+                        // 📊 คัดกรองคิดเงินรวมแดชบอร์ดเฉพาะค่างวดเดือนนี้
                         if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
                             const vName = (data.village || "เจ้ วิไล").trim();
-                            if (vName === "เจ้ วิไล") { moneyV1 += data.total_price || 0; unitV1 += data.units_used || 0; }
-                            else if (vName === "หนองไทรบน") { moneyV2 += data.total_price || 0; unitV2 += data.units_used || 0; }
+                            const bPrice = data.total_price || 0;
+                            
+                            // บวกรวมยอดเงินประจำกลุ่มหมู่บ้าน
+                            if (vName === "เจ้ วิไล") { moneyV1 += bPrice; unitV1 += data.units_used || 0; }
+                            else if (vName === "หนองไทรบน") { moneyV2 += bPrice; unitV2 += data.units_used || 0; }
+                            
+                            // 💰 บวกรวมสถิติเรียกเก็บ / จ่ายแล้ว / ค้างจ่าย
+                            finTotal += bPrice;
+                            if(data.status === "ชำระแล้ว") { finPaid += bPrice; }
+                            else { finUnpaid += bPrice; }
+
+                            totalUnitsLogged += data.units_used || 0;
+                            recordsCount++;
                         }
                     }
                     
-                    const villageBadge = data.village ? `[${data.village}] ` : '';
-                    const gpsText = data.latitude ? `<div class="gps-badge">📍 พิกัดจดมิเตอร์: ${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}</div>` : '';
-                    
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `
-                        <div class="history-header">
-                            <span>🏠 ${villageBadge}${data.resident_name || 'ไม่ระบุชื่อ'}</span>
-                            <span class="history-date">${dateString}</span>
-                            <button class="btn-delete-history" data-id="${id}">🗑️</button>
-                        </div>
-                        <div class="history-details">
-                            <span>เลขจดครั้งนี้: <b>${data.current_value}</b> (ใช้ไป ${data.units_used.toFixed(1)} หน่วย)</span>
-                            <span class="history-price">💰 ${data.total_price.toLocaleString()} บาท</span>
-                        </div>
-                        ${gpsText}`;
-                    historyList.appendChild(div);
+                    renderHistoryItem(id, data, dateString);
                 });
 
-                updateDashboardDisplays(moneyV1, unitV1, moneyV2, unitV2);
+                // ตรวจหาค่าเฉลี่ยหน่วยการใช้น้ำรวมของงวดนี้ เพื่อไปใช้คำนวณรอยท่อแตก/ท่อรั่วซึมหลัก
+                averageUnitsCache = recordsCount > 0 ? (totalUnitsLogged / recordsCount) : 10;
+                updateDashboardDisplays(moneyV1, unitV1, moneyV2, unitV2, finTotal, finPaid, finUnpaid);
+
             } catch (error) { console.error(error); }
         }
 
-        function updateDashboardDisplays(mV1, uV1, mV2, uV2) {
+        // ฟังก์ชันช่วยเรนเดอร์บิลประวัติพร้อมปุ่มสลับ 3 สีสถานะเงิน
+        function renderHistoryItem(id, data, dateString) {
+            const villageBadge = data.village ? `[${data.village}] ` : '';
+            const gpsText = data.latitude ? `<span class="gps-badge">📍 ฝังพิกัดมิเตอร์แล้ว</span>` : '';
+            
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            // ผูกคีย์ค้นหาเพื่อให้กล่อง Search กรองบิล "ค้างชำระ" ได้
+            div.setAttribute('data-search-text', `${data.village} ${data.resident_name} ${data.status}`.toLowerCase());
+            div.innerHTML = `
+                <div class="history-header">
+                    <span>🏠 ${villageBadge}${data.resident_name}</span>
+                    <span class="history-date">${dateString}</span>
+                    <button class="btn-delete-history" data-id="${id}">🗑️</button>
+                </div>
+                <div class="history-details">
+                    <span>เลขจด: <b>${data.current_value}</b> (ใช้ ${data.units_used.toFixed(1)} น.) ${gpsText}</span>
+                    <span class="history-price">💰 ${data.total_price.toLocaleString()} ฿</span>
+                </div>
+                <div class="status-toggle-container">
+                    <button class="btn-status-toggle paid ${data.status === 'ชำระแล้ว' ? 'active' : ''}" data-id="${id}" data-status="ชำระแล้ว">🟢 จ่ายแล้ว</button>
+                    <button class="btn-status-toggle pending ${data.status === 'รอชำระ' ? 'active' : ''}" data-id="${id}" data-status="รอชำระ">🟡 รอชำระ</button>
+                    <button class="btn-status-toggle unpaid ${data.status === 'ค้างชำระ' ? 'active' : ''}" data-id="${id}" data-status="ค้างชำระ">🔴 ค้างจ่าย</button>
+                </div>`;
+            historyList.appendChild(div);
+        }
+
+        // 🔍 ระบบกรอกค้นหาบิลในหน้าประวัติแบบเรียลไทม์ (พิมพ์คำว่า 'ค้างชำระ' เพื่อกรองเฉพาะคนค้างจ่ายได้)
+        document.getElementById('history-search').addEventListener('input', (e) => {
+            const searchText = e.target.value.toLowerCase().trim();
+            const items = historyList.getElementsByClassName('history-item');
+            
+            Array.from(items).forEach(item => {
+                const itemText = item.getAttribute('data-search-text');
+                if (itemText.includes(searchText)) { item.classList.remove('hidden'); } 
+                else { item.classList.add('hidden'); }
+            });
+        });
+
+        function updateDashboardDisplays(mV1, uV1, mV2, uV2, fTotal, fPaid, fUnpaid) {
             document.getElementById('sum-money-v1').textContent = `💰 ${mV1.toLocaleString()} ฿`;
             document.getElementById('sum-unit-v1').textContent = `ใช้ไป: ${uV1.toFixed(1)} หน่วย`;
             document.getElementById('sum-money-v2').textContent = `💰 ${mV2.toLocaleString()} ฿`;
             document.getElementById('sum-unit-v2').textContent = `ใช้ไป: ${uV2.toFixed(1)} หน่วย`;
+            
+            document.getElementById('fin-total-bill').textContent = `${fTotal.toLocaleString()} บาท`;
+            document.getElementById('fin-total-paid').textContent = `${fPaid.toLocaleString()} บาท`;
+            document.getElementById('fin-total-unpaid').textContent = `${fUnpaid.toLocaleString()} บาท`;
         }
 
+        // 🛡️ ฝากกล่องประวัติส่วนกลาง ดักฟังสัญญาณปุ่มลบ หรือปุ่มกดเปลี่ยนสถานะจ่ายเงิน 3 สี
         historyList.addEventListener('click', async (e) => {
             const deleteHistoryBtn = e.target.closest('.btn-delete-history');
+            const statusBtn = e.target.closest('.btn-status-toggle');
+
             if (deleteHistoryBtn) {
                 const recordId = deleteHistoryBtn.getAttribute('data-id');
                 if (confirm("คุณต้องการลบรายการประวัติใบนี้ใช่หรือไม่?")) {
-                    try { 
-                        await deleteDoc(doc(db, "water_records", recordId)); 
-                        showCustomAlert("ลบประวัติสำเร็จ", "success"); 
-                        loadHistory(); 
-                    } catch (error) { }
+                    try { await deleteDoc(doc(db, "water_records", recordId)); showCustomAlert("ลบประวัติสำเร็จ", "success"); loadHistory(); } catch (error) { }
                 }
+            }
+
+            if (statusBtn) {
+                const recordId = statusBtn.getAttribute('data-id');
+                const targetStatus = statusBtn.getAttribute('data-status');
+                try {
+                    // 💰 อัปเดตเปลี่ยนสถานะเงินสดลงไปยังฐานข้อมูลคลาวด์ชิ้นประวัติ
+                    await updateDoc(doc(db, "water_records", recordId), { status: targetStatus });
+                    loadHistory(); // สั่งแดชบอร์ดบวกยอดเงินใหม่ทันทีแบบเรียลไทม์
+                } catch (error) { console.error(error); }
             }
         });
 
-        // ================= 📄 ระบบส่งออกรายงาน EXCEL และ PDF ผ่าน LINE มือถือ =================
+        // ================= 📄 ระบบส่งออกรายงาน EXCEL และ PDF ผ่าน LINE =================
         document.getElementById('btn-export-excel').addEventListener('click', () => {
             if(rawHistoryRecords.length === 0) { showCustomAlert("ยังไม่มีข้อมูลประวัติสำหรับส่งออก", "warning"); return; }
-            
             const structuredData = rawHistoryRecords.map((r, index) => ({
                 "ลำดับ": index + 1,
                 "หมู่บ้าน": r.village || "เจ้ วิไล",
                 "ชื่อลูกบ้าน": r.resident_name,
-                "เลขมิเตอร์ครั้งก่อน": r.previous_value,
-                "เลขมิเตอร์ครั้งนี้": r.current_value,
-                "หน่วยที่ใช้": r.units_used,
-                "ยอดเงินรวม (บาท)": r.total_price,
-                "พิกัดละติจูด": r.latitude || "ไม่มี",
-                "พิกัดลองจิจูด": r.longitude || "ไม่มี"
+                "เลขมิเตอร์ก่อน": r.previous_value,
+                "เลขมิเตอร์นี้": r.current_value,
+                "หน่วยใช้น้ำ": r.units_used,
+                "ยอดค่าน้ำ (บาท)": r.total_price,
+                "สถานะเงิน": r.status || "รอชำระ"
             }));
-
             const worksheet = XLSX.utils.json_to_sheet(structuredData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "รายงานค่าน้ำ");
-            XLSX.writeFile(workbook, `รายงานค่าน้ำ_H2O_Recorder.xlsx`);
+            XLSX.writeFile(workbook, `รายงานค่าน้ำ_สรุปยอดประจำงวด.xlsx`);
         });
 
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             const element = document.getElementById('history-container-print');
             if(rawHistoryRecords.length === 0) { showCustomAlert("ยังไม่มีข้อมูลประวัติให้พรินต์ PDF", "warning"); return; }
-            
             const options = {
-                margin: 10,
-                filename: 'รายงานค่าน้ำประจำงวด.pdf',
+                margin: 10, filename: 'ใบรายงานเรียกเก็บค่าน้ำ.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -907,27 +1022,45 @@
             html2pdf().set(options).from(element).save();
         });
 
-        // ================= เพิ่ม/แก้ไข ลูกบ้าน =================
+        // ================= เพิ่ม/แก้ไข ข้อมูลลูกบ้านพร้อมบันทึกหมายเหตุที่ตั้งนำทาง =================
         document.getElementById('btn-save-resident').addEventListener('click', async () => {
             const id = document.getElementById('edit-resident-id').value;
             const village = document.getElementById('manage-village').value;
             const name = document.getElementById('manage-name').value.trim();
             const meter = parseFloat(document.getElementById('manage-meter').value);
-            if (!name || isNaN(meter)) { showCustomAlert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนเซฟครับ", "warning"); return; }
+            const note = document.getElementById('manage-note').value.trim();
+            
+            if (!name || isNaN(meter)) { showCustomAlert("กรุณากรอกชื่อและเลขมิเตอร์เริ่มต้นด้วยครับ", "warning"); return; }
+            
             try {
                 if (id) { 
-                    await updateDoc(doc(db, "residents", id), { village: village, name: name, last_meter: meter }); 
+                    await updateDoc(doc(db, "residents", id), { village: village, name: name, last_meter: meter, note: note }); 
                     showCustomAlert("แก้ไขข้อมูลสำเร็จ", "success"); 
+                } else { 
+                    // 📍 ทุกการสร้างลูกบ้านใหม่ จะดักจับตำแหน่งเสา GPS สลักเก็บไว้เปิด Apple Maps นำทางตลอดชีพ
+                    if(navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(async (pos) => {
+                            await addDoc(collection(db, "residents"), { village: village, name: name, last_meter: meter, note: note, latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+                            finalizeResidentSave(village);
+                        }, async () => {
+                            await addDoc(collection(db, "residents"), { village: village, name: name, last_meter: meter, note: note, latitude: null, longitude: null });
+                            finalizeResidentSave(village);
+                        });
+                    } else {
+                        await addDoc(collection(db, "residents"), { village: village, name: name, last_meter: meter, note: note, latitude: null, longitude: null });
+                        finalizeResidentSave(village);
+                    }
+                    return;
                 }
-                else { 
-                    await addDoc(collection(db, "residents"), { village: village, name: name, last_meter: meter }); 
-                    showCustomAlert("เพิ่มลูกบ้านสำเร็จ", "success"); 
-                }
-                resetManageForm(); await loadResidents(); switchTab('record');
+                finalizeResidentSave(village);
             } catch (error) { }
         });
 
-        // ================= คำนวณมิเตอร์พร้อมดักจับตำแหน่ง GPS ล่าสุดหลังบ้าน =================
+        function finalizeResidentSave(village) {
+            resetManageForm(); loadResidents(); recordVillageFilter.value = village; filterResidentsByVillage(); switchTab('record');
+        }
+
+        // ================= บันทึกค่าน้ำหน้าแรก + ระบบสแกนพฤติกรรมน้ำแตกท่อรั่วซึม =================
         residentSelect.addEventListener('change', (e) => {
             const residentId = e.target.value;
             if (residentId && residentsData[residentId]) {
@@ -943,16 +1076,26 @@
 
             if (!residentId || isNaN(currentValue)) { showCustomAlert("กรุณากรอกตัวเลขค่าน้ำให้ครบถ้วนครับ", "warning"); return; }
             const previousValue = residentsData[residentId].last_meter;
+            
             if (currentValue === previousValue) { showCustomAlert("คุณบันทึกเลขหลังนี้ไปแล้ว ไม่จำเป็นต้องกดซ้ำครับ", "warning"); return; }
             if (currentValue < previousValue) { showCustomAlert("เลขครั้งนี้ น้อยกว่า ครั้งก่อนไม่ได้นะ!", "error"); return; }
             
             const unitsUsed = currentValue - previousValue;
+
+            // ⚠️ 🛡️ Smart AI Filter: ระบบคัดกรองพฤติกรรมการใช้น้ำรั่วซึมผิดปกติ
+            // หากบ้านหลังนี้ใช้น้ำพุ่งสูงเกิน 2.5 เท่า ของเกณฑ์เฉลี่ยมาตรฐานส่วนกลาง ระบบจะล็อกเด้งเตือนทันทีชวนตรวจทาน
+            if (recordsCountCacheHasData() && unitsUsed > (averageUnitsCache * 2.5)) {
+                if(!confirm(`⚠️ ตรวจพบพฤติกรรมใช้น้ำผิดปกติ!\nบ้านหลังนี้ใช้น้ำไปสูงถึง ${unitsUsed.toFixed(1)} หน่วย (สูงกว่าปกติ 2.5 เท่า)\n\nกรุณาตรวจสอบว่าพิมพ์เลขผิด หรือมีท่อแตกรั่วซึมหรือไม่?\nคุณยืนยันว่าตัวเลขนี้ถูกต้องชัวร์ใช่ไหม?`)) {
+                    return; // ยกเลิกการบันทึกเพื่อให้ผู้ใช้ตรวจสอบใหม่อีกครั้ง
+                }
+            }
+
             const totalPrice = (unitsUsed * 8) + 10;
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, position.coords.latitude, position.coords.longitude);
-                }, async (err) => {
+                }, async () => {
                     await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, null, null);
                 });
             } else {
@@ -960,13 +1103,15 @@
             }
         });
 
+        function recordsCountCacheHasData() { return averageUnitsCache > 0; }
+
         async function saveWaterRecord(residentId, name, village, prev, current, units, price, lat, lng) {
             try {
                 btnSubmit.disabled = true;
                 await addDoc(collection(db, "water_records"), {
                     resident_id: residentId, resident_name: name, village: village,
                     record_date: serverTimestamp(), previous_value: prev, current_value: current,
-                    units_used: units, total_price: price, latitude: lat, longitude: lng
+                    units_used: units, total_price: price, latitude: lat, longitude: lng, status: "รอชำระ"
                 });
                 await updateDoc(doc(db, "residents", residentId), { last_meter: current });
                 
