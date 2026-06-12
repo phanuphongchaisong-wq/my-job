@@ -282,6 +282,52 @@
         .btn-edit { background-color: #fef3c7; color: #92400e; }
         .btn-delete { background-color: #fee2e2; color: #991b1b; }
 
+        /* การ์ดสถิติสรุปยอดรวมประจำเดือนดีไซน์พรีเมียม */
+        .summary-dashboard {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1);
+        }
+        .summary-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .summary-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .summary-box h4 {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+        .summary-box .sum-money {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #34d399;
+        }
+        .summary-box .sum-unit {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
         .history-item {
             background: #fff;
             border: 1px solid var(--border);
@@ -521,6 +567,23 @@
             </div>
 
             <div id="tab-history-content" class="hidden">
+                
+                <div class="summary-dashboard">
+                    <div class="summary-title">📈 สรุปยอดเก็บเงินรวมเดือนนี้</div>
+                    <div class="summary-grid">
+                        <div class="summary-box">
+                            <h4>🏘️ 1 เจ้ วิไล</h4>
+                            <div class="sum-money" id="sum-money-v1">0 บาท</div>
+                            <div class="sum-unit" id="sum-unit-v1">ใช้ไป: 0 หน่วย</div>
+                        </div>
+                        <div class="summary-box">
+                            <h4>🏘️ 2 หนองไทรบน</h4>
+                            <div class="sum-money" id="sum-money-v2">0 บาท</div>
+                            <div class="sum-unit" id="sum-unit-v2">ใช้ไป: 0 หน่วย</div>
+                        </div>
+                    </div>
+                </div>
+
                 <h3 style="margin-bottom: 14px; font-size: 1.1rem; color: #475569; font-weight: 600;">📜 รายการประวัติจดน้ำล่าสุด</h3>
                 <div id="history-list"></div>
             </div>
@@ -695,6 +758,7 @@
         tabs.history.btn.addEventListener('click', () => switchTab('history'));
         tabs.manage.btn.addEventListener('click', () => switchTab('manage'));
 
+
         // ================= ระบบดึงข้อมูล คัดแยกตามหมู่บ้านย่อย =================
         async function loadResidents() {
             try {
@@ -736,10 +800,8 @@
             } catch (error) { console.error(error); }
         }
 
-        // 💡 🛡️ แก้ไขจุดวิกฤตความเสถียร: ใช้ระบบดักจับกล่องส่วนกลาง (Event Delegation) 
-        // สั่งดักฟังกล่องรายชื่อลูกบ้านทั้งหมด ทีนี้ต่อให้แอปจะวาดปุ่มแก้ไขอันใหม่ขึ้นมากี่ล้านรอบ ก็จะกดติดทุกครั้งแน่นอน
+        // ฝากระบบส่วนกลางดักจับปุ่มแก้ไข/ลบ
         residentsList.addEventListener('click', async (e) => {
-            // กรณีตรวจเจอว่านิ้วนายไปกดโดนปุ่ม "แก้ไข"
             if (e.target.classList.contains('btn-edit')) {
                 const id = e.target.getAttribute('data-id');
                 if (!residentsData[id]) return;
@@ -747,7 +809,6 @@
                 document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
                 document.getElementById('edit-resident-id').value = id;
                 
-                // .trim() ล้างช่องว่างตัวหนังสือออก เพื่อป้องกัน Dropdown หาค่าไม่เจอ
                 const cleanVillage = (residentsData[id].village || "เจ้ วิไล").trim();
                 document.getElementById('manage-village').value = cleanVillage;
                 
@@ -755,11 +816,9 @@
                 document.getElementById('manage-meter').value = residentsData[id].last_meter;
                 document.getElementById('btn-cancel-edit').classList.remove('hidden');
                 
-                // ดันหน้าจอมือถือสไลด์เด้งขึ้นไปบนสุด เพื่อให้นายพิมพ์แก้ไขสะดวก
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // กรณีตรวจเจอว่านิ้วนายไปกดโดนปุ่ม "ลบ"
             if (e.target.classList.contains('btn-delete')) {
                 const id = e.target.getAttribute('data-id');
                 if (confirm(`คุณแน่ใจว่าต้องการลบรายชื่อ "${residentsData[id].name}"?`)) {
@@ -817,24 +876,48 @@
         }
         document.getElementById('btn-cancel-edit').addEventListener('click', resetManageForm);
 
-        // ================= ประวัติการจดน้ำ & ระบบลบประวัติย่อย =================
+        // ================= ประวัติการจดน้ำ & ระบบคำนวณยอดเงินรวมแยกหมู่บ้าน =================
         async function loadHistory() {
             try {
                 const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(50));
                 const querySnapshot = await getDocs(historyQuery);
                 historyList.innerHTML = '';
+                
+                // ตัวแปรสำหรับคำนวณสถิติประจำเดือนปัจจุบัน
+                let moneyV1 = 0, unitV1 = 0; // ของเจ้ วิไล
+                let moneyV2 = 0, unitV2 = 0; // ของหนองไทรบน
+                
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
                 if(querySnapshot.empty) {
                     historyList.innerHTML = '<div style="text-align:center; color:#a0aec0; padding:20px;">ยังไม่มีประวัติการจดค่าน้ำ</div>';
+                    updateDashboardDisplays(0, 0, 0, 0);
                     return;
                 }
+
                 querySnapshot.forEach((docSnap) => {
                     const id = docSnap.id;
                     const data = docSnap.data();
                     let dateString = "ไม่ระบุวันที่";
+                    
                     if (data.record_date) {
                         const d = data.record_date.toDate();
                         dateString = d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute:'2-digit' }) + " น.";
+                        
+                        // 📊 ลอจิกบวกรวมยอดเงิน: ตรวจสอบว่าเป็นบิลของเดือนนี้และปีนี้ตรงกันหรือไม่
+                        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                            const cleanVillageName = (data.village || "เจ้ วิไล").trim();
+                            if (cleanVillageName === "เจ้ วิไล") {
+                                moneyV1 += data.total_price || 0;
+                                unitV1 += data.units_used || 0;
+                            } else if (cleanVillageName === "หนองไทรบน") {
+                                moneyV2 += data.total_price || 0;
+                                unitV2 += data.units_used || 0;
+                            }
+                        }
                     }
+                    
                     const villageBadge = data.village ? `[${data.village}] ` : '';
                     const div = document.createElement('div');
                     div.className = 'history-item';
@@ -850,18 +933,30 @@
                         </div>`;
                     historyList.appendChild(div);
                 });
+
+                // สั่งอัปเดตตัวเลขผลรวมขึ้นบนหน้าจอกล่องแดชบอร์ด
+                updateDashboardDisplays(moneyV1, unitV1, moneyV2, unitV2);
+
             } catch (error) { console.error(error); }
         }
 
-        // 💡 🛡️ แก้ไขเพิ่ม: ใช้ลอจิกฝากกล่องส่วนกลางดักจับปุ่มลบประวัติเช่นเดียวกัน เพื่อไม่ให้ปุ่มล็อกค้าง
+        // ฟังก์ชันช่วยเรนเดอร์ตัวเลขสรุปยอดรวมรายเดือนโชว์บนแอป
+        function updateDashboardDisplays(mV1, uV1, mV2, uV2) {
+            document.getElementById('sum-money-v1').textContent = `💰 ${mV1.toLocaleString()} บาท`;
+            document.getElementById('sum-unit-v1').textContent = `ใช้ไป: ${uV1.toFixed(1)} หน่วย`;
+            document.getElementById('sum-money-v2').textContent = `💰 ${mV2.toLocaleString()} บาท`;
+            document.getElementById('sum-unit-v2').textContent = `ใช้ไป: ${uV2.toFixed(1)} หน่วย`;
+        }
+
+        // ฝากระบบส่วนกลางดักจับคำสั่งปุ่มลบประวัติบิลค้าง
         historyList.addEventListener('click', async (e) => {
             if (e.target.classList.contains('btn-delete-history')) {
                 const recordId = e.target.getAttribute('data-id');
-                if (confirm("คุณต้องการลบรายการประวัติการจดน้ำใบนี้ใช่หรือไม่?\n*หมายเหตุ: ข้อมูลการคำนวณจะถูกลบออกจากรายงานย้อนหลัง*")) {
+                if (confirm("คุณต้องการลบรายการประวัติการจดน้ำใบนี้ใช่หรือไม่?\n*หมายเหตุ: ข้อมูลรายงานยอดรวมหมู่บ้านประจำเดือนจะถูกคำนวณหักออกให้ทันที*")) {
                     try {
                         await deleteDoc(doc(db, "water_records", recordId));
                         showCustomAlert("ลบประวัติการจดค่าน้ำเรียบร้อย", "success");
-                        loadHistory();
+                        loadHistory(); // รีโหลดประวัติและแดชบอร์ดสรุปยอดใหม่
                     } catch (error) {
                         showCustomAlert("ไม่สามารถลบประวัติได้", "error");
                     }
