@@ -579,12 +579,20 @@
                         <div class="summary-box">
                             <h4>🏘️ 1 เจ้ วิไล</h4>
                             <div class="sum-money" id="sum-money-v1">0 บาท</div>
-                            <div class="sum-unit" id="sum-unit-v1">ใช้ไป: 0 หน่วย</div>
+                            <div class="sum-unit" id="sum-unit-v1" style="margin-bottom: 5px;">ใช้ไป: 0 หน่วย</div>
+                            <div style="font-size: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px;">
+                                <div style="color: #34d399; display: flex; justify-content: space-between; margin-bottom: 2px;"><span>🟢 เก็บแล้ว:</span> <strong id="sum-paid-v1">0</strong></div>
+                                <div style="color: #f87171; display: flex; justify-content: space-between;"><span>🔴 ค้างจ่าย:</span> <strong id="sum-unpaid-v1">0</strong></div>
+                            </div>
                         </div>
                         <div class="summary-box">
                             <h4>🏘️ 2 หนองไทรบน</h4>
                             <div class="sum-money" id="sum-money-v2">0 บาท</div>
-                            <div class="sum-unit" id="sum-unit-v2">ใช้ไป: 0 หน่วย</div>
+                            <div class="sum-unit" id="sum-unit-v2" style="margin-bottom: 5px;">ใช้ไป: 0 หน่วย</div>
+                            <div style="font-size: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px;">
+                                <div style="color: #34d399; display: flex; justify-content: space-between; margin-bottom: 2px;"><span>🟢 เก็บแล้ว:</span> <strong id="sum-paid-v2">0</strong></div>
+                                <div style="color: #f87171; display: flex; justify-content: space-between;"><span>🔴 ค้างจ่าย:</span> <strong id="sum-unpaid-v2">0</strong></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1024,7 +1032,7 @@
         }
         document.getElementById('btn-cancel-edit').addEventListener('click', resetManageForm);
 
-        // ================= ประวัติการจดน้ำ & ยอดรวมสรุปแยกงวดจัดเก็บคัสตอม (อัปเกรด รวบยอด) =================
+        // ================= ประวัติการจดน้ำ & ยอดรวมสรุปแยกงวดจัดเก็บคัสตอม (อัปเกรด รวบยอด + แยกค้าง/จ่ายรายหมู่บ้าน) =================
         async function loadHistory() {
             try {
                 const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(250));
@@ -1032,8 +1040,8 @@
                 historyList.innerHTML = '';
                 rawHistoryRecords = [];
                 
-                let moneyV1 = 0, unitV1 = 0;
-                let moneyV2 = 0, unitV2 = 0;
+                let moneyV1 = 0, unitV1 = 0, paidV1 = 0, unpaidV1 = 0;
+                let moneyV2 = 0, unitV2 = 0, paidV2 = 0, unpaidV2 = 0;
                 let finTotal = 0, finPaid = 0, finUnpaid = 0;
                 let totalUnitsLogged = 0, recordsCount = 0;
 
@@ -1043,7 +1051,7 @@
 
                 if(querySnapshot.empty) {
                     historyList.innerHTML = '<div style="text-align:center; color:#a0aec0; padding:20px;">ยังไม่มีประวัติการจดค่าน้ำ</div>';
-                    updateDashboardDisplays(0, 0, 0, 0, 0, 0, 0);
+                    updateDashboardDisplays(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                     return;
                 }
 
@@ -1072,12 +1080,21 @@
                     if (matchMonth) {
                         const vName = (data.village || "เจ้ วิไล").trim();
                         const bPrice = data.total_price || 0;
+                        const isPaid = (data.status === "ชำระแล้ว");
                         
-                        if (vName === "เจ้ วิไล") { moneyV1 += bPrice; unitV1 += data.units_used || 0; }
-                        else if (vName === "หนองไทรบน") { moneyV2 += bPrice; unitV2 += data.units_used || 0; }
+                        if (vName === "เจ้ วิไล") { 
+                            moneyV1 += bPrice; 
+                            unitV1 += data.units_used || 0; 
+                            if(isPaid) paidV1 += bPrice; else unpaidV1 += bPrice;
+                        }
+                        else if (vName === "หนองไทรบน") { 
+                            moneyV2 += bPrice; 
+                            unitV2 += data.units_used || 0; 
+                            if(isPaid) paidV2 += bPrice; else unpaidV2 += bPrice;
+                        }
                         
                         finTotal += bPrice;
-                        if(data.status === "ชำระแล้ว") { finPaid += bPrice; }
+                        if(isPaid) { finPaid += bPrice; }
                         else { finUnpaid += bPrice; }
 
                         totalUnitsLogged += data.units_used || 0;
@@ -1092,7 +1109,7 @@
                 });
 
                 averageUnitsCache = recordsCount > 0 ? (totalUnitsLogged / recordsCount) : 10;
-                updateDashboardDisplays(moneyV1, unitV1, moneyV2, unitV2, finTotal, finPaid, finUnpaid);
+                updateDashboardDisplays(moneyV1, unitV1, paidV1, unpaidV1, moneyV2, unitV2, paidV2, unpaidV2, finTotal, finPaid, finUnpaid);
 
             } catch (error) { console.error(error); }
         }
@@ -1149,11 +1166,17 @@
             });
         });
 
-        function updateDashboardDisplays(mV1, uV1, mV2, uV2, fTotal, fPaid, fUnpaid) {
+        // 🌟 ฟังก์ชันอัปเดต Dashboard สรุปยอดเงิน (เพิ่มพารามิเตอร์ของยอดเก็บแล้ว/ค้างจ่ายรายหมู่บ้าน)
+        function updateDashboardDisplays(mV1, uV1, pV1, upV1, mV2, uV2, pV2, upV2, fTotal, fPaid, fUnpaid) {
             document.getElementById('sum-money-v1').textContent = `💰 ${mV1.toLocaleString()} ฿`;
             document.getElementById('sum-unit-v1').textContent = `ใช้ไป: ${uV1.toFixed(1)} หน่วย`;
+            document.getElementById('sum-paid-v1').textContent = `${pV1.toLocaleString()}`;
+            document.getElementById('sum-unpaid-v1').textContent = `${upV1.toLocaleString()}`;
+            
             document.getElementById('sum-money-v2').textContent = `💰 ${mV2.toLocaleString()} ฿`;
             document.getElementById('sum-unit-v2').textContent = `ใช้ไป: ${uV2.toFixed(1)} หน่วย`;
+            document.getElementById('sum-paid-v2').textContent = `${pV2.toLocaleString()}`;
+            document.getElementById('sum-unpaid-v2').textContent = `${upV2.toLocaleString()}`;
             
             document.getElementById('fin-total-bill').textContent = `${fTotal.toLocaleString()} บาท`;
             document.getElementById('fin-total-paid').textContent = `${fPaid.toLocaleString()} บาท`;
