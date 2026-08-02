@@ -262,7 +262,7 @@
         .resident-note { font-size: 0.82rem; color: var(--warning); background-color: rgba(217, 119, 6, 0.06); padding: 4px 10px; border-radius: 6px; font-weight: 500; width: 100%; }
         .resident-actions { display: flex; gap: 8px; justify-content: flex-end; width: 100%; margin-top: 4px; }
 
-        .btn-sm { padding: 8px 14px; font-size: 0.82rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-sm { padding: 8px 14px; font-size: 0.82rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; display:flex; align-items:center; justify-content:center; gap:4px; }
         .btn-edit { background-color: #fef3c7; color: #92400e; }
         .btn-delete { background-color: #fee2e2; color: #991b1b; }
         .btn-map { background-color: #e0f2fe; color: #0369a1; }
@@ -345,9 +345,9 @@
         .login-logo { text-align: center; margin-bottom: 25px; }
         .login-logo h1 { color: var(--text-main); font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; }
 
-        .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .custom-alert-box { background: #ffffff; width: 85%; max-width: 340px; border-radius: 20px; padding: 24px; text-align: center; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15); }
-        body.dark-mode .custom-alert-box { background: #0f172a; border: 1px solid #1e293b; }
+        /* ================= ซ้อนทับ Modal อัปเกรดใหม่ ================= */
+        .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .custom-alert-box { background: var(--bg-card); width: 85%; max-width: 360px; border-radius: 20px; padding: 24px; text-align: center; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25); border: 1px solid var(--border); }
         .alert-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
         .alert-message { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
         .alert-btn { background: var(--accent-gradient); color: white; border: none; padding: 12px 32px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; }
@@ -359,11 +359,68 @@
 </head>
 <body>
 
+    <!-- แจ้งเตือนทั่วไป -->
     <div id="custom-alert" class="custom-alert-overlay hidden">
         <div class="custom-alert-box">
             <span id="alert-icon" class="alert-icon">💡</span>
             <div id="alert-message" class="alert-message">ข้อความแจ้งเตือน</div>
             <button type="button" class="alert-btn" id="alert-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- 🌟 Modal แก้ไขบิลย้อนหลัง -->
+    <div id="edit-record-modal" class="custom-alert-overlay hidden">
+        <div class="custom-alert-box" style="text-align: left;">
+            <h3 style="margin-bottom: 15px; color: var(--accent); font-weight:700;">✏️ แก้ไขข้อมูลบิล</h3>
+            <input type="hidden" id="edit-record-id">
+            
+            <div class="form-group">
+                <label>📅 งวดเดือนที่เก็บจริง:</label>
+                <select id="edit-record-month">
+                    <option value="0">มกราคม</option>
+                    <option value="1">กุมภาพันธ์</option>
+                    <option value="2">มีนาคม</option>
+                    <option value="3">เมษายน</option>
+                    <option value="4">พฤษภาคม</option>
+                    <option value="5">มิถุนายน</option>
+                    <option value="6">กรกฎาคม</option>
+                    <option value="7">สิงหาคม</option>
+                    <option value="8">กันยายน</option>
+                    <option value="9">ตุลาคม</option>
+                    <option value="10">พฤศจิกายน</option>
+                    <option value="11">ธันวาคม</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>📅 งวดปี:</label>
+                <select id="edit-record-year">
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>💰 ยอดเงินรวม (บาท):</label>
+                <input type="number" id="edit-record-price" inputmode="decimal">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-edit-record" style="flex:1;">ยกเลิก</button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit-record" style="flex:1;">💾 บันทึกการแก้ไข</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌟 Modal แสดงประวัติลูกบ้านแบบส่วนตัว -->
+    <div id="resident-history-modal" class="custom-alert-overlay hidden">
+        <div class="custom-alert-box" style="width: 95%; max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">
+                <h3 style="color: var(--accent); margin:0; font-size:1.1rem; font-weight:700;" id="resident-history-title">📜 ประวัติ: ...</h3>
+                <button id="btn-close-resident-history" style="background:none; border:none; font-size:1.5rem; color:var(--error); cursor:pointer;">✖</button>
+            </div>
+            <div id="resident-history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Records will be injected here -->
+            </div>
         </div>
     </div>
 
@@ -542,6 +599,7 @@
                 <div class="filter-cycle-card">
                     <label for="filter-month" style="margin-bottom:0; font-size:0.88rem;">📅 เลือกงวดสรุปยอด:</label>
                     <select id="filter-month" style="flex:1; padding:8px 12px; border-radius:8px;">
+                        <option value="-1">รวมทุกเดือน (ดูทั้งหมด)</option> <!-- 🌟 เพิ่มตัวเลือกดูรวมทุกบิล -->
                         <option value="0">มกราคม</option>
                         <option value="1">กุมภาพันธ์</option>
                         <option value="2">มีนาคม</option>
@@ -650,7 +708,7 @@
     <!-- ================= ส่วนที่ 3: JavaScript ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { initializeFirestore, doc, deleteDoc, collection, getDocs, addDoc, updateDoc, query, orderBy, limit, serverTimestamp } 
+        import { initializeFirestore, doc, deleteDoc, collection, getDocs, addDoc, updateDoc, query, orderBy, limit, serverTimestamp, where } 
                from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } 
                from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -685,6 +743,7 @@
         let residentsData = {};
         let rawHistoryRecords = [];
         let averageUnitsCache = 0;
+        let currentEditRecordId = null; // ตัวแปรเก็บ ID บิลที่กำลังแก้
 
         function showCustomAlert(message, type = 'info') {
             const alertOverlay = document.getElementById('custom-alert');
@@ -700,6 +759,17 @@
 
         document.getElementById('alert-close-btn').addEventListener('click', () => {
             document.getElementById('custom-alert').classList.add('hidden');
+        });
+
+        // ปิด Modal ดูประวัติลูกบ้าน
+        document.getElementById('btn-close-resident-history').addEventListener('click', () => {
+            document.getElementById('resident-history-modal').classList.add('hidden');
+        });
+
+        // ปิด Modal แก้ไขบิล
+        document.getElementById('btn-cancel-edit-record').addEventListener('click', () => {
+            document.getElementById('edit-record-modal').classList.add('hidden');
+            currentEditRecordId = null;
         });
 
         // ================= 🌙 ระบบควบคุม DARK MODE =================
@@ -954,10 +1024,10 @@
         }
         document.getElementById('btn-cancel-edit').addEventListener('click', resetManageForm);
 
-        // ================= ประวัติการจดน้ำ & ยอดรวมสรุปแยกงวดจัดเก็บคัสตอม =================
+        // ================= ประวัติการจดน้ำ & ยอดรวมสรุปแยกงวดจัดเก็บคัสตอม (อัปเกรด รวบยอด) =================
         async function loadHistory() {
             try {
-                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(150));
+                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(250));
                 const querySnapshot = await getDocs(historyQuery);
                 historyList.innerHTML = '';
                 rawHistoryRecords = [];
@@ -969,12 +1039,15 @@
 
                 const selectedMonthFilter = parseInt(document.getElementById('filter-month').value);
                 const selectedYearFilter = parseInt(document.getElementById('filter-year').value);
+                const isAllMonths = selectedMonthFilter === -1; // 🌟 เช็คว่าดูรวมทุกเดือนหรือไม่
 
                 if(querySnapshot.empty) {
                     historyList.innerHTML = '<div style="text-align:center; color:#a0aec0; padding:20px;">ยังไม่มีประวัติการจดค่าน้ำ</div>';
                     updateDashboardDisplays(0, 0, 0, 0, 0, 0, 0);
                     return;
                 }
+
+                let renderedResidents = new Set(); // 🌟 ป้องกันชื่อซ้ำในหน้าประวัติ (รวบชื่อลูกบ้านคนเดียวกันเป็น 1 รายการ)
 
                 querySnapshot.forEach((docSnap) => {
                     const id = docSnap.id;
@@ -994,7 +1067,9 @@
                         dateString = d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute:'2-digit' }) + " น.";
                     }
 
-                    if (bMonth === selectedMonthFilter && bYear === selectedYearFilter) {
+                    const matchMonth = isAllMonths || (bMonth === selectedMonthFilter && bYear === selectedYearFilter);
+
+                    if (matchMonth) {
                         const vName = (data.village || "เจ้ วิไล").trim();
                         const bPrice = data.total_price || 0;
                         
@@ -1007,9 +1082,13 @@
 
                         totalUnitsLogged += data.units_used || 0;
                         recordsCount++;
+
+                        // 🌟 ระบบรวบชื่อลูกบ้าน: โชว์แค่บิลล่าสุดของลูกบ้านคนนั้น ไม่ให้ซ้ำซ้อนในหน้ารายการ
+                        if (!renderedResidents.has(data.resident_id)) {
+                            renderHistoryItem(id, data, dateString);
+                            renderedResidents.add(data.resident_id);
+                        }
                     }
-                    
-                    renderHistoryItem(id, data, dateString);
                 });
 
                 averageUnitsCache = recordsCount > 0 ? (totalUnitsLogged / recordsCount) : 10;
@@ -1035,6 +1114,8 @@
             const div = document.createElement('div');
             div.className = 'history-item';
             div.setAttribute('data-search-text', `${data.village} ${data.resident_name} ${data.status}`.toLowerCase());
+            
+            // 🌟 เพิ่มปุ่ม "แก้ไขบิล" และปุ่ม "ดูประวัติส่วนตัว" ลงในการ์ด
             div.innerHTML = `
                 <div class="history-header">
                     <span>🏠 ${villageBadge}${data.resident_name}${billingCycleText}${extraNoticeLog}</span>
@@ -1049,6 +1130,10 @@
                     <button class="btn-status-toggle paid ${data.status === 'ชำระแล้ว' ? 'active' : ''}" data-id="${id}" data-status="ชำระแล้ว">🟢 จ่ายแล้ว</button>
                     <button class="btn-status-toggle pending ${data.status === 'รอชำระ' ? 'active' : ''}" data-id="${id}" data-status="รอชำระ">🟡 รอชำระ</button>
                     <button class="btn-status-toggle unpaid ${data.status === 'ค้างชำระ' ? 'active' : ''}" data-id="${id}" data-status="ค้างชำระ">🔴 ค้างจ่าย</button>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; border-top:1px dashed var(--border); padding-top:10px; gap:8px;">
+                    <button class="btn-sm btn-edit-record" data-id="${id}" style="background-color:#e0e7ff; color:#1d4ed8; flex:1;">✏️ แก้ไขบิล/เงิน</button>
+                    <button class="btn-sm btn-view-history" data-resident-id="${data.resident_id}" data-resident-name="${data.resident_name}" style="background-color:#f3e8ff; color:#6d28d9; flex:1;">👁️ ดูประวัติ</button>
                 </div>`;
             historyList.appendChild(div);
         }
@@ -1075,10 +1160,73 @@
             document.getElementById('fin-total-unpaid').textContent = `${fUnpaid.toLocaleString()} บาท`;
         }
 
+        // ================= 🌟 ฟังก์ชันดึงประวัติเฉพาะบุคคลใส่ Modal =================
+        async function openResidentHistoryModal(residentId, residentName) {
+            document.getElementById('resident-history-title').textContent = `📜 ประวัติ: ${residentName}`;
+            document.getElementById('resident-history-list').innerHTML = '<div style="text-align:center; padding: 20px; color:#64748b;">กำลังโหลดประวัติ... ⏳</div>';
+            document.getElementById('resident-history-modal').classList.remove('hidden');
+
+            try {
+                // ดึงบิลเก่าของคนๆ นี้มาเรียงลำดับ
+                const q = query(collection(db, "water_records"), where("resident_id", "==", residentId));
+                const snap = await getDocs(q);
+                let records = [];
+                snap.forEach(doc => {
+                    let d = doc.data();
+                    d.id = doc.id;
+                    records.push(d);
+                });
+                
+                // จัดเรียงวันที่ใหม่ล่าสุดอยู่บนสุด
+                records.sort((a, b) => {
+                    let tA = a.record_date ? a.record_date.toMillis() : 0;
+                    let tB = b.record_date ? b.record_date.toMillis() : 0;
+                    return tB - tA;
+                });
+
+                const listEl = document.getElementById('resident-history-list');
+                listEl.innerHTML = '';
+                
+                if(records.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center; padding: 20px; color:#64748b;">ยังไม่มีประวัติการจดค่าน้ำครับ</div>';
+                    return;
+                }
+
+                const monthsTH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+
+                records.forEach(r => {
+                    let bMonth = r.billing_month !== undefined ? r.billing_month : (r.record_date ? r.record_date.toDate().getMonth() : -1);
+                    let bYear = r.billing_year !== undefined ? r.billing_year : (r.record_date ? r.record_date.toDate().getFullYear() : '');
+                    let cycleText = bMonth >= 0 ? `📅 งวด ${monthsTH[bMonth]} ${bYear}` : '📅 ไม่ระบุงวด';
+                    let statusColor = r.status === 'ชำระแล้ว' ? 'color:#059669;' : (r.status === 'รอชำระ' ? 'color:#d97706;' : 'color:#dc2626;');
+                    
+                    listEl.innerHTML += `
+                        <div style="border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: #f8fafc;">
+                            <div style="display:flex; justify-content: space-between; margin-bottom:6px;">
+                                <strong>${cycleText}</strong>
+                                <span style="${statusColor} font-weight:700; background:rgba(255,255,255,0.8); padding:2px 8px; border-radius:6px;">${r.status || 'รอชำระ'}</span>
+                            </div>
+                            <div style="display:flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                                <span style="color:var(--text-muted);">ใช้น้ำไป: ${r.units_used} หน่วย</span>
+                                <strong style="color:var(--success); font-size:1.1rem;">${r.total_price} ฿</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+                document.getElementById('resident-history-list').innerHTML = '<div style="color:red; text-align:center; padding:20px;">เกิดข้อผิดพลาดในการดึงข้อมูล</div>';
+            }
+        }
+
+        // ================= 🌟 ฟังก์ชันจัดการปุ่มกดในหน้ารายการประวัติ =================
         historyList.addEventListener('click', async (e) => {
             const deleteHistoryBtn = e.target.closest('.btn-delete-history');
             const statusBtn = e.target.closest('.btn-status-toggle');
+            const editRecordBtn = e.target.closest('.btn-edit-record');
+            const viewHistoryBtn = e.target.closest('.btn-view-history');
 
+            // 🗑️ ลบบิล
             if (deleteHistoryBtn) {
                 const recordId = deleteHistoryBtn.getAttribute('data-id');
                 if (confirm("คุณต้องการลบรายการประวัติใบนี้ใช่หรือไม่?")) {
@@ -1086,6 +1234,7 @@
                 }
             }
 
+            // 🟢 เปลี่ยนสถานะการจ่ายเงิน
             if (statusBtn) {
                 const recordId = statusBtn.getAttribute('data-id');
                 const targetStatus = statusBtn.getAttribute('data-status');
@@ -1093,6 +1242,56 @@
                     await updateDoc(doc(db, "water_records", recordId), { status: targetStatus });
                     loadHistory();
                 } catch (error) { console.error(error); }
+            }
+
+            // ✏️ กดปุ่มแก้ไขงวดบิลและยอดเงิน
+            if (editRecordBtn) {
+                currentEditRecordId = editRecordBtn.getAttribute('data-id');
+                const record = rawHistoryRecords.find(r => r.id === currentEditRecordId);
+                
+                if(record) {
+                    let bMonth = record.billing_month !== undefined ? record.billing_month : (record.record_date ? record.record_date.toDate().getMonth() : 0);
+                    let bYear = record.billing_year !== undefined ? record.billing_year : (record.record_date ? record.record_date.toDate().getFullYear() : 2026);
+                    
+                    document.getElementById('edit-record-month').value = bMonth;
+                    document.getElementById('edit-record-year').value = bYear;
+                    document.getElementById('edit-record-price').value = record.total_price;
+                    
+                    document.getElementById('edit-record-modal').classList.remove('hidden');
+                }
+            }
+
+            // 👁️ กดปุ่มดูประวัติลูกบ้าน
+            if (viewHistoryBtn) {
+                const resId = viewHistoryBtn.getAttribute('data-resident-id');
+                const resName = viewHistoryBtn.getAttribute('data-resident-name');
+                openResidentHistoryModal(resId, resName);
+            }
+        });
+
+        // ================= 🌟 บันทึกการแก้ไขข้อมูลบิลลงระบบ =================
+        document.getElementById('btn-save-edit-record').addEventListener('click', async () => {
+            if(!currentEditRecordId) return;
+            
+            const newMonth = parseInt(document.getElementById('edit-record-month').value);
+            const newYear = parseInt(document.getElementById('edit-record-year').value);
+            const newPrice = parseFloat(document.getElementById('edit-record-price').value);
+            
+            if(isNaN(newPrice)) { showCustomAlert("กรุณาระบุยอดเงินให้ถูกต้อง", "warning"); return; }
+
+            try {
+                await updateDoc(doc(db, "water_records", currentEditRecordId), {
+                    billing_month: newMonth,
+                    billing_year: newYear,
+                    total_price: newPrice
+                });
+                
+                document.getElementById('edit-record-modal').classList.add('hidden');
+                currentEditRecordId = null;
+                showCustomAlert("บันทึกการแก้ไขข้อมูลบิลสำเร็จ!", "success");
+                loadHistory(); // รีเฟรชหน้าจอดึงข้อมูลใหม่
+            } catch(e) {
+                showCustomAlert("แก้ไขไม่สำเร็จ กรุณาลองใหม่", "error");
             }
         });
 
