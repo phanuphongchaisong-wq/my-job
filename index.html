@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- ดึงคลังส่งออกรายงานชีต Excel และเอกสาร PDF มาใช้บนสมาร์ทโฟนโดยตรง -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -289,6 +290,19 @@
         .fin-row .green { color: #34d399; font-weight: bold; }
         .fin-row .red { color: #f87171; font-weight: bold; }
 
+        /* 📅 กล่องเลือกงวดจัดเก็บค่าน้ำ (Custom Billing Filter) */
+        .filter-cycle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .filter-cycle-card select { padding: 10px; font-size: 0.9rem; border-radius: 8px; color: var(--text-main); background-color: var(--bg-page); }
+
         .history-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -353,6 +367,7 @@
         </div>
     </div>
 
+    <!-- ================= หน้าล็อกอิน ================= -->
     <div id="login-page" class="app-container">
         <div class="login-container">
             <div class="login-logo">
@@ -376,6 +391,7 @@
         </div>
     </div>
 
+    <!-- ================= หน้าสมัครสมาชิก ================= -->
     <div id="register-page" class="app-container hidden">
         <div class="login-container">
             <div class="login-logo">
@@ -397,6 +413,7 @@
         </div>
     </div>
 
+    <!-- ================= หน้าหลักของแอป ================= -->
     <div id="main-page" class="app-container hidden">
         
         <div id="weekend-warning" class="weekend-warning-banner hidden">
@@ -412,8 +429,35 @@
 
         <main class="main-content">
             
+            <!-- แท็บที่ 1: หน้าจดค่าน้ำ -->
             <div id="tab-record-content">
                 <div class="card">
+                    <!-- 📅 ช่องเลือกงวดรอบเดือนที่จะเก็บค่าน้ำ (เริ่มต้นเป็น มิถุนายน 2026) -->
+                    <div class="form-group" style="background-color: rgba(37,99,235,0.04); padding: 12px; border-radius: 12px; border: 1px dashed var(--border);">
+                        <label for="record-month">📅 เลือกงวดบิลที่กำลังจะจัดเก็บ:</label>
+                        <div style="display:flex; gap:8px;">
+                            <select id="record-month" style="padding:10px; font-size:0.9rem;">
+                                <option value="0">มกราคม</option>
+                                <option value="1">กุมภาพันธ์</option>
+                                <option value="2">มีนาคม</option>
+                                <option value="3">เมษายน</option>
+                                <option value="4">พฤษภาคม</option>
+                                <option value="5" selected>มิถุนายน</option>
+                                <option value="6">กรกฎาคม</option>
+                                <option value="7">สิงหาคม</option>
+                                <option value="8">กันยายน</option>
+                                <option value="9">ตุลาคม</option>
+                                <option value="10">พฤศจิกายน</option>
+                                <option value="11">ธันวาคม</option>
+                            </select>
+                            <select id="record-year" style="width:110px; padding:10px; font-size:0.9rem;">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="record-village-filter">🏘️ เลือกเป้าหมายหมู่บ้าน</label>
                         <select id="record-village-filter">
@@ -469,10 +513,11 @@
                 </div>
             </div>
 
+            <!-- แท็บที่ 2: ประวัติการจดค่าน้ำ + Dashboard + ส่งออกชีต -->
             <div id="tab-history-content" class="hidden">
                 
                 <div class="summary-dashboard">
-                    <div class="summary-title">📊 สรุปยอดเก็บเงินรวมเดือนนี้</div>
+                    <div class="summary-title">📊 สรุปยอดเก็บเงินรวมตามงวดที่กำหนด</div>
                     <div class="summary-grid">
                         <div class="summary-box">
                             <h4>🏘️ 1 เจ้ วิไล</h4>
@@ -493,6 +538,30 @@
                     </div>
                 </div>
 
+                <!-- 📅 ตัวกรองเลือกงวดจัดเก็บค่าน้ำ (Custom Billing Cycle Filter) -->
+                <div class="filter-cycle-card">
+                    <label for="filter-month" style="margin-bottom:0; font-size:0.88rem;">📅 เลือกงวดสรุปยอด:</label>
+                    <select id="filter-month" style="flex:1; padding:8px 12px; border-radius:8px;">
+                        <option value="0">มกราคม</option>
+                        <option value="1">กุมภาพันธ์</option>
+                        <option value="2">มีนาคม</option>
+                        <option value="3">เมษายน</option>
+                        <option value="4">พฤษภาคม</option>
+                        <option value="5" selected>มิถุนายน</option>
+                        <option value="6">กรกฎาคม</option>
+                        <option value="7">สิงหาคม</option>
+                        <option value="8">กันยายน</option>
+                        <option value="9">ตุลาคม</option>
+                        <option value="10">พฤศจิกายน</option>
+                        <option value="11">ธันวาคม</option>
+                    </select>
+                    <select id="filter-year" style="width:100px; padding:8px 12px; border-radius:8px;">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+
                 <div class="export-group">
                     <button class="btn-export" id="btn-export-excel">🟢 ส่งออกไฟล์ Excel</button>
                     <button class="btn-export" id="btn-export-pdf">🔴 ส่งออกรายงาน PDF</button>
@@ -509,6 +578,7 @@
                 </div>
             </div>
 
+            <!-- แท็บที่ 3: หน้าจัดการข้อมูลลูกบ้าน -->
             <div id="tab-manage-content" class="hidden">
                 <div class="card">
                     <h3 id="form-manage-title" style="margin-bottom:15px; color:var(--accent); font-weight: 600;">➕ เพิ่มลูกบ้านใหม่</h3>
@@ -577,6 +647,7 @@
         </nav>
     </div>
 
+    <!-- ================= ส่วนที่ 3: JavaScript ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { initializeFirestore, doc, deleteDoc, collection, getDocs, addDoc, updateDoc, query, orderBy, limit, serverTimestamp } 
@@ -796,7 +867,6 @@
             });
         });
 
-        // 💡 ระบบส่วนกลางดักรับพิกัดคลิก ปลดล็อกอาการปุ่มแก้ไขล็อกตาย
         residentsList.addEventListener('click', async (e) => {
             const editBtn = e.target.closest('.btn-edit');
             const deleteBtn = e.target.closest('.btn-delete');
@@ -808,7 +878,10 @@
 
                 document.getElementById('form-manage-title').textContent = "✏️ แก้ไขข้อมูลลูกบ้าน";
                 document.getElementById('edit-resident-id').value = id;
-                document.getElementById('manage-village').value = (residentsData[id].village || "เจ้ วิไล").trim();
+                
+                const cleanVillage = (residentsData[id].village || "เจ้ วิไล").trim();
+                document.getElementById('manage-village').value = cleanVillage;
+                
                 document.getElementById('manage-name').value = residentsData[id].name;
                 document.getElementById('manage-meter').value = residentsData[id].last_meter;
                 document.getElementById('manage-note').value = residentsData[id].note || "";
@@ -881,10 +954,10 @@
         }
         document.getElementById('btn-cancel-edit').addEventListener('click', resetManageForm);
 
-        // ================= ประวัติการจดน้ำ & ระบบลบประวัติย่อย =================
+        // ================= ประวัติการจดน้ำ & ยอดรวมสรุปแยกงวดจัดเก็บคัสตอม =================
         async function loadHistory() {
             try {
-                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(100));
+                const historyQuery = query(collection(db, "water_records"), orderBy("record_date", "desc"), limit(150));
                 const querySnapshot = await getDocs(historyQuery);
                 historyList.innerHTML = '';
                 rawHistoryRecords = [];
@@ -894,8 +967,8 @@
                 let finTotal = 0, finPaid = 0, finUnpaid = 0;
                 let totalUnitsLogged = 0, recordsCount = 0;
 
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
+                const selectedMonthFilter = parseInt(document.getElementById('filter-month').value);
+                const selectedYearFilter = parseInt(document.getElementById('filter-year').value);
 
                 if(querySnapshot.empty) {
                     historyList.innerHTML = '<div style="text-align:center; color:#a0aec0; padding:20px;">ยังไม่มีประวัติการจดค่าน้ำ</div>';
@@ -912,24 +985,28 @@
                     rawHistoryRecords.push(data);
                     
                     let dateString = "ระบุผ่านออฟไลน์";
+                    
+                    let bMonth = data.billing_month !== undefined ? data.billing_month : (data.record_date ? data.record_date.toDate().getMonth() : -1);
+                    let bYear = data.billing_year !== undefined ? data.billing_year : (data.record_date ? data.record_date.toDate().getFullYear() : -1);
+
                     if (data.record_date) {
                         const d = data.record_date.toDate();
                         dateString = d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute:'2-digit' }) + " น.";
-                        
-                        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-                            const vName = (data.village || "เจ้ วิไล").trim();
-                            const bPrice = data.total_price || 0;
-                            
-                            if (vName === "เจ้ วิไล") { moneyV1 += bPrice; unitV1 += data.units_used || 0; }
-                            else if (vName === "หนองไทรบน") { moneyV2 += bPrice; unitV2 += data.units_used || 0; }
-                            
-                            finTotal += bPrice;
-                            if(data.status === "ชำระแล้ว") { finPaid += bPrice; }
-                            else { finUnpaid += bPrice; }
+                    }
 
-                            totalUnitsLogged += data.units_used || 0;
-                            recordsCount++;
-                        }
+                    if (bMonth === selectedMonthFilter && bYear === selectedYearFilter) {
+                        const vName = (data.village || "เจ้ วิไล").trim();
+                        const bPrice = data.total_price || 0;
+                        
+                        if (vName === "เจ้ วิไล") { moneyV1 += bPrice; unitV1 += data.units_used || 0; }
+                        else if (vName === "หนองไทรบน") { moneyV2 += bPrice; unitV2 += data.units_used || 0; }
+                        
+                        finTotal += bPrice;
+                        if(data.status === "ชำระแล้ว") { finPaid += bPrice; }
+                        else { finUnpaid += bPrice; }
+
+                        totalUnitsLogged += data.units_used || 0;
+                        recordsCount++;
                     }
                     
                     renderHistoryItem(id, data, dateString);
@@ -941,20 +1018,26 @@
             } catch (error) { console.error(error); }
         }
 
+        document.getElementById('filter-month').addEventListener('change', loadHistory);
+        document.getElementById('filter-year').addEventListener('change', loadHistory);
+
         function renderHistoryItem(id, data, dateString) {
             const villageBadge = data.village ? `[${data.village}] ` : '';
             const gpsText = data.latitude ? `<span class="gps-badge">📍 ฝังพิกัดมิเตอร์แล้ว</span>` : '';
             
+            const monthsTH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            const billingCycleText = data.billing_month !== undefined ? ` <span style="color:#2563eb; font-weight:600; font-size:0.8rem;">(งวด ${monthsTH[data.billing_month]})</span>` : '';
+
             let extraNoticeLog = '';
             if (data.isFree50) extraNoticeLog += ` <span style="color:#059669; font-weight:600; font-size:0.8rem;">(🎁 ฟรี 50น.)</span>`;
-            if (data.isNoFee) extraNoticeLog += ` <span style="color:#7c3aed; font-weight:600; font-size:0.8rem;">(❌ ยกเว้นค่าบำรุง)</span>`;
+            if (data.isNoFee) extraNoticeLog += ` <span style="color:#7c3aed; font-weight:600; font-size:0.8rem;">(❌ เว้นค่าบำรุง)</span>`;
             
             const div = document.createElement('div');
             div.className = 'history-item';
             div.setAttribute('data-search-text', `${data.village} ${data.resident_name} ${data.status}`.toLowerCase());
             div.innerHTML = `
                 <div class="history-header">
-                    <span>🏠 ${villageBadge}${data.resident_name}${extraNoticeLog}</span>
+                    <span>🏠 ${villageBadge}${data.resident_name}${billingCycleText}${extraNoticeLog}</span>
                     <span class="history-date">${dateString}</span>
                     <button class="btn-delete-history" data-id="${id}">🗑️</button>
                 </div>
@@ -1044,7 +1127,7 @@
             html2pdf().set(options).from(element).save();
         });
 
-        // ================= เพิ่ม/แก้ไข ข้อมูลลูกบ้านพร้อมบันทึกสิทธิ์ =================
+        // ================= เพิ่ม/แก้ไข ข้อมูลลูกบ้าน =================
         document.getElementById('btn-save-resident').addEventListener('click', async () => {
             const id = document.getElementById('edit-resident-id').value;
             const village = document.getElementById('manage-village').value;
@@ -1147,25 +1230,28 @@
                 }
             }
 
+            const targetBillingMonth = parseInt(document.getElementById('record-month').value);
+            const targetBillingYear = parseInt(document.getElementById('record-year').value);
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
-                    await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, position.coords.latitude, position.coords.longitude);
+                    await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, targetBillingMonth, targetBillingYear, position.coords.latitude, position.coords.longitude);
                 }, async () => {
-                    await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, null, null);
+                    await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, targetBillingMonth, targetBillingYear, null, null);
                 });
             } else {
-                await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, null, null);
+                await saveWaterRecord(residentId, residentsData[residentId].name, selectedVillage, previousValue, currentValue, unitsUsed, totalPrice, isUserEligibleForFree, isNoFeeEligible, targetBillingMonth, targetBillingYear, null, null);
             }
         });
 
-        async function saveWaterRecord(residentId, name, village, prev, current, units, price, isFree, isNoFee, lat, lng) {
+        async function saveWaterRecord(residentId, name, village, prev, current, units, price, isFree, isNoFee, bMonth, bYear, lat, lng) {
             try {
                 btnSubmit.disabled = true;
-                // 💡 เคลียร์บั๊กพิมพ์เกินเรียบร้อย รันต่อได้ยาว ๆ เลยครับ
                 await addDoc(collection(db, "water_records"), {
                     resident_id: residentId, resident_name: name, village: village,
                     record_date: serverTimestamp(), previous_value: prev, current_value: current,
-                    units_used: units, total_price: price, isFree50: isFree, isNoFee: isNoFee, latitude: lat, longitude: lng, status: "รอชำระ"
+                    units_used: units, total_price: price, isFree50: isFree, isNoFee: isNoFee, 
+                    billing_month: bMonth, billing_year: bYear, latitude: lat, longitude: lng, status: "รอชำระ"
                 });
                 await updateDoc(doc(db, "residents", residentId), { last_meter: current });
                 
@@ -1175,8 +1261,11 @@
                 resPrice.textContent = `${price.toLocaleString()} บาท`;
                 resultBox.classList.remove('hidden');
 
-                showCustomAlert("บันทึกข้อมูลเรียบร้อย! จดลงสมุดได้เลยครับ", "success");
+                showCustomAlert("บันทึกข้อมูลเรียบร้อย! งวดนี้จะถูกบันทึกลงรอบเดือนที่กำหนดทันที", "success");
                 currentMeterInput.value = '';
+                
+                document.getElementById('filter-month').value = bMonth;
+                document.getElementById('filter-year').value = bYear;
             } catch (error) { showCustomAlert("เกิดข้อผิดพลาดในการบันทึก", "error"); }
             finally { btnSubmit.disabled = false; }
         }
